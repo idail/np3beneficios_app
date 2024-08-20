@@ -63,14 +63,17 @@ class LoginState extends State<Login>{
 
   Future<void> logar(String usuario, String senha) async{
     var uri = Uri.parse(
-      "http://192.168.100.6/np3beneficios_app/api/index.php?usuario=$usuario&senha=$senha");
+      "http://192.168.15.200/np3beneficios_app/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
     var resposta = await http.get(
       uri,
         headers: {"Accept": "application/json"});
 
-    var retorno = jsonDecode(resposta.body);
+    print(resposta.body);
+    //var retorno = jsonDecode(resposta.body);
+    Map<String, dynamic> grupo = jsonDecode(resposta.body);
+    print(grupo["nome"]);
     
-    if(retorno != "")
+    /*if(retorno != "")
     {
       print(retorno);
       //  Navigator.pushReplacement(
@@ -79,7 +82,7 @@ class LoginState extends State<Login>{
       //   );
     }else{
       mostrarAlerta("Erro de login","Informações");
-    }
+    }*/
   }
 
   @override
@@ -113,7 +116,7 @@ class LoginState extends State<Login>{
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    mostrarAlerta("Dados de acesso","Informações");
+                    //mostrarAlerta("Dados de acesso","Informações");
                     logar(usuariotext.text, senhatext.text);
                   },
                   style: ElevatedButton.styleFrom(
