@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -11,13 +14,13 @@ class LoginState extends State<Login>{
   var usuariotext = TextEditingController();
   var senhatext = TextEditingController();
 
-  void mostrarAlerta(String titulo) {
+  void mostrarAlerta(String titulo,String mensagem) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(titulo),
-          content: Text(usuariotext.text + " - " + senhatext.text),
+          content: Text(mensagem + " - " + usuariotext.text + " - " + senhatext.text),
           actions: <Widget>[
             TextButton(
               child: Text('OK'),
@@ -58,6 +61,27 @@ class LoginState extends State<Login>{
       );
   }
 
+  Future<void> logar(String usuario, String senha) async{
+    var uri = Uri.parse(
+      "http://192.168.100.6/np3beneficios_app/api/index.php?usuario=$usuario&senha=$senha");
+    var resposta = await http.get(
+      uri,
+        headers: {"Accept": "application/json"});
+
+    var retorno = jsonDecode(resposta.body);
+    
+    if(retorno != "")
+    {
+      print(retorno);
+      //  Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => Tela()),
+      //   );
+    }else{
+      mostrarAlerta("Erro de login","Informações");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +113,8 @@ class LoginState extends State<Login>{
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    mostrarAlerta("Dados de acesso");
+                    mostrarAlerta("Dados de acesso","Informações");
+                    logar(usuariotext.text, senhatext.text);
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
