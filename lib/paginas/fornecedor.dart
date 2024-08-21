@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
-class Gestor extends StatefulWidget {
-  const Gestor({super.key});
+class Fornecedor extends StatefulWidget {
+  const Fornecedor({super.key});
 
   @override
-  GestorState createState() {
-    return new GestorState();
+  FornecedorState createState() {
+    return new FornecedorState();
   }
 }
 
-class GestorState extends State<Gestor> {
+class FornecedorState extends State<Fornecedor> {
   // ignore: unused_field
   final _formKey = GlobalKey<FormState>();
 
@@ -85,7 +85,7 @@ class GestorState extends State<Gestor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Formulário e Lista de Pedidos'),
+        title: const Text('Pedidos Fornecedor'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

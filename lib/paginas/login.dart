@@ -2,6 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:np3beneficios_app/paginas/fornecedor.dart';
+import 'package:np3beneficios_app/paginas/gestor.dart';
+enum TipoAcesso {
+  fornecedor,
+  gestor,
+  }
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -10,11 +16,11 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login>{
-
   var usuariotext = TextEditingController();
   var senhatext = TextEditingController();
 
   void mostrarAlerta(String titulo,String mensagem) {
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -63,15 +69,45 @@ class LoginState extends State<Login>{
 
   Future<void> logar(String usuario, String senha) async{
     var uri = Uri.parse(
-      "http://192.168.15.200/np3beneficios_app/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
+      "http://192.168.100.6/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
     var resposta = await http.get(
       uri,
         headers: {"Accept": "application/json"});
 
     print(resposta.body);
-    //var retorno = jsonDecode(resposta.body);
-    Map<String, dynamic> grupo = jsonDecode(resposta.body);
-    print(grupo["nome"]);
+
+    var retorno = jsonDecode(resposta.body);
+
+    print(retorno);
+
+    if(retorno == "Fornecedor")
+    {
+      print("f");
+    }else{
+      print("g");
+    }
+
+    try {
+    TipoAcesso tipoAcesso = (await verificaLogin(retorno)) as TipoAcesso;
+
+    if (tipoAcesso == TipoAcesso.fornecedor) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Fornecedor()),
+      );
+    } else if (tipoAcesso == TipoAcesso.gestor) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Gestor()),
+      );
+    }
+  } catch (e) {
+    print('Erro durante a autenticação: $e');
+  }
+    
+
+    // Map<String, dynamic> usuario_recebido = jsonDecode(resposta.body);
+    // print(usuario_recebido["nome"]);
     
     /*if(retorno != "")
     {
@@ -83,6 +119,16 @@ class LoginState extends State<Login>{
     }else{
       mostrarAlerta("Erro de login","Informações");
     }*/
+  }
+
+  Future<TipoAcesso> verificaLogin(String dado) async
+  {
+     if(dado == "Fornecedor")
+     {
+        return TipoAcesso.fornecedor;
+     }else{
+        return TipoAcesso.gestor;
+     }
   }
 
   @override

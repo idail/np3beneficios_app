@@ -85,7 +85,7 @@ class GestorState extends State<Gestor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Formulário e Lista de Pedidos'),
+        title: const Text('Pedidos Gestor'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
