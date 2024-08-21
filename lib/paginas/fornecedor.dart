@@ -2,10 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:http/http.dart' as http;
 
 class Fornecedor extends StatefulWidget {
-  const Fornecedor({super.key});
-
+  final int usuario_codigo;
+  Fornecedor({required this.usuario_codigo});
   @override
   FornecedorState createState() {
     return new FornecedorState();
@@ -19,6 +20,8 @@ class FornecedorState extends State<Fornecedor> {
   final _nomeController = TextEditingController();
   final _idadeController = TextEditingController();
 
+  var dados;
+
   String texto = '';
 
   final List<String> pedidos = [
@@ -28,6 +31,40 @@ class FornecedorState extends State<Fornecedor> {
     'Pedido 4: Salada Caesar',
     'Pedido 5: Sorvete de Chocolate',
   ];
+
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _BuscaPedidos();
+
+    print(widget.usuario_codigo);
+
+  }
+
+  _BuscaPedidos() async{
+    String pedidos = "";
+    var uri = Uri.parse(
+      "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}");
+    var resposta = await http.get(
+      uri,
+        headers: {"Accept": "application/json"});
+
+    print(resposta.body);
+
+    // final map = json.decode(response.body);
+    // final itens = map["result"];
+    // if(map["result"] == 'Dados não encontrados!'){
+    //   mensagem();
+    // }else{
+    //   setState(() {
+    //     carregando = true;
+    //     this.dados = itens;
+
+    //   });
+
+    // }
+
+  }
 
   void mostrarAlerta(String titulo, String mensagem) {
     showDialog(

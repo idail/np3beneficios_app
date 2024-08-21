@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:np3beneficios_app/abas.dart';
 import 'package:np3beneficios_app/paginas/fornecedor.dart';
 import 'package:np3beneficios_app/paginas/gestor.dart';
 enum TipoAcesso {
@@ -69,7 +70,7 @@ class LoginState extends State<Login>{
 
   Future<void> logar(String usuario, String senha) async{
     var uri = Uri.parse(
-      "http://192.168.100.6/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
+      "http://192.168.15.200/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
     var resposta = await http.get(
       uri,
         headers: {"Accept": "application/json"});
@@ -78,9 +79,12 @@ class LoginState extends State<Login>{
 
     var retorno = jsonDecode(resposta.body);
 
-    print(retorno);
+    var nome_grupo = retorno["nome_grupo_usuario"];
+    var nome_usuario = retorno["nome"];
+    int codigo_usuario =  int.parse(retorno["codigo_usuario_autenticado"]);
+    print(nome_usuario);
 
-    if(retorno == "Fornecedor")
+    if(nome_grupo == "Fornecedor")
     {
       print("f");
     }else{
@@ -88,19 +92,15 @@ class LoginState extends State<Login>{
     }
 
     try {
-    TipoAcesso tipoAcesso = (await verificaLogin(retorno)) as TipoAcesso;
+    TipoAcesso tipoAcesso = (await verificaLogin(nome_grupo)) as TipoAcesso;
 
-    if (tipoAcesso == TipoAcesso.fornecedor) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Fornecedor()),
-      );
-    } else if (tipoAcesso == TipoAcesso.gestor) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Gestor()),
-      );
-    }
+    // Redireciona para a tela que contém as abas
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => Abas(tipoAcesso: tipoAcesso, nomeUsuario: nome_usuario, usuario_codigo: codigo_usuario)),
+    );
+
+    
   } catch (e) {
     print('Erro durante a autenticação: $e');
   }
