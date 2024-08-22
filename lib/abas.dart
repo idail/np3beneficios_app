@@ -5,7 +5,7 @@ import 'package:np3beneficios_app/paginas/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Abas extends StatefulWidget {
-  late TipoAcesso? tipoAcesso  = null;
+  late TipoAcesso tipoAcesso;
   late String nomeUsuario = "";
   late int usuario_codigo = 0;
   //final String urlFotoPerfil;
@@ -93,7 +93,7 @@ class _AbasState extends State<Abas> {
                         Container(child: Center(child: Text('Informações do Fornecedor'))),
                       ]
                     : [
-                        Gestor(), // Tela de Pedidos para Gestor
+                        Gestor(usuario_codigo : widget.usuario_codigo, tipo_Acesso: "Gestor"), // Tela de Pedidos para Gestor
                         Container(child: Center(child: Text('Relatórios do Gestor'))),
                         Container(child: Center(child: Text('Configurações do Gestor'))),
                       ],
@@ -126,7 +126,6 @@ class _AbasState extends State<Abas> {
 
   Future<void> _logout() async {
     // Limpar dados de autenticação
-    widget.tipoAcesso = null;
     widget.nomeUsuario = "";
     widget.usuario_codigo = 0;
     // Navegar para a tela de login

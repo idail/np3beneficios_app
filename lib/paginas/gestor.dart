@@ -1,19 +1,24 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:http/http.dart' as http;
+import 'package:np3beneficios_app/paginas/login.dart';
 
 class Gestor extends StatefulWidget {
-  const Gestor({super.key});
+  final int usuario_codigo;
+  final String tipo_Acesso;
+
+  Gestor({required this.usuario_codigo, required this.tipo_Acesso});
 
   @override
   GestorState createState() {
-    return new GestorState();
+    return GestorState();
   }
 }
 
 class GestorState extends State<Gestor> {
-  // ignore: unused_field
   final _formKey = GlobalKey<FormState>();
 
   final _nomeController = TextEditingController();
@@ -58,27 +63,30 @@ class GestorState extends State<Gestor> {
     );
 
     setState(() {
-      //print("vendo qr code:" + code);
       texto = code != '-1' ? code : 'Não validado';
-
-      print(texto);
-
-      mostrarAlerta("Informação",texto);
+      mostrarAlerta("Informação", texto);
     });
+  }
 
-    // Stream<dynamic>? reader = FlutterBarcodeScanner.getBarcodeStreamReceiver(
-    //   "#FFFFFF",
-    //   "Cancelar",
-    //   false,
-    //   ScanMode.QR,
-    // );
-    // if (reader != null)
-    //   reader.listen((code) {
-    //     setState(() {
-    //       if (!tickets.contains(code.toString()) && code != '-1')
-    //         tickets.add(code.toString());
-    //     });
-    //   });
+  Future<List<Map<String, dynamic>>> PedidosGestor() async {
+    var uri = Uri.parse(
+      "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
+    var resposta = await http.get(
+      uri,
+      headers: {"Accept": "application/json"});
+
+    List<dynamic> data = json.decode(resposta.body);
+
+    print(data);
+
+    return List<Map<String, dynamic>>.from(data);
+  }
+
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    PedidosGestor();
+
   }
 
   @override
@@ -87,99 +95,56 @@ class GestorState extends State<Gestor> {
       appBar: AppBar(
         title: const Text('Pedidos Gestor'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Form(
-            //   key: _formKey,
-            //   child: Column(
-            //     children: [
-            //       TextFormField(
-            //         controller: _nomeController,
-            //         decoration: const InputDecoration(labelText: 'Nome'),
-            //         validator: (value) {
-            //           if (value == null || value.isEmpty) {
-            //             return 'Por favor, insira seu nome';
-            //           }
-            //           return null;
-            //         },
-            //       ),
-            //       TextFormField(
-            //         controller: _idadeController,
-            //         decoration: const InputDecoration(labelText: 'Idade'),
-            //         keyboardType: TextInputType.number,
-            //         validator: (value) {
-            //           if (value == null || value.isEmpty) {
-            //             return 'Por favor, insira sua idade';
-            //           }
-            //           return null;
-            //         },
-            //       ),
-            //       const SizedBox(height: 20),
-            //       ElevatedButton(
-            //         onPressed: () {
-            //           if (_formKey.currentState!.validate()) {
-            //             ScaffoldMessenger.of(context).showSnackBar(
-            //               SnackBar(
-            //                 content: Text(
-            //                     'Nome: ${_nomeController.text}, Idade: ${_idadeController.text}'),
-            //               ),
-            //             );
-            //           }
-            //         },
-            //         child: const Text('Enviar'),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: pedidos.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    elevation: 4.0,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                        horizontal: 16.0,
-                      ),
-                      title: Text(
-                        pedidos[index],
-                        style: const TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      trailing: ElevatedButton(
-                        onPressed: () {
-                          readQRCode();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '${pedidos[index]}: Pagamento informado!',
-                              ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10.0,
-                            horizontal: 20.0,
-                          ),
-                        ),
-                        child: const Text('Pagar'),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: PedidosGestor(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Erro ao carregar os dados'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('Nenhum pedido encontrado'));
+          }
+
+          final pedidos = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: pedidos.length,
+            itemBuilder: (context, index) {
+              final pedido = pedidos[index];
+
+              int id = pedido['id'];
+              DateTime data = DateTime.parse(pedido['dt_pedido']);
+              String descricao = pedido['descricaopedido'];
+              String status = pedido['nome'];
+              double valorPedido = pedido['valor_total'].toDouble();
+              double valorCotacao = pedido['valor_total_cotacao'].toDouble();
+              String usuario = "Rames";
+
+              return Card(
+                child: ListTile(
+                  title: Text('Pedido $id - $descricao'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Data: ${data.toLocal().toString().split(' ')[0]}'),
+                      Text('Status: $status'),
+                      Text('Valor Pedido: R\$${valorPedido.toStringAsFixed(2)}'),
+                      Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}'),
+                      Text('Usuário: $usuario'),
+                    ],
+                  ),
+                  trailing: ElevatedButton(
+                    onPressed: () {
+                      // Implementar a ação do botão aqui
+                    },
+                    child: Text('Ação'),
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

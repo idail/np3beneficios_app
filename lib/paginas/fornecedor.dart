@@ -42,14 +42,14 @@ class FornecedorState extends State<Fornecedor> {
   }
 
   _BuscaPedidos() async{
-    String pedidos = "";
-    var uri = Uri.parse(
-      "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}");
-    var resposta = await http.get(
-      uri,
-        headers: {"Accept": "application/json"});
+    // String pedidos = "";
+    // var uri = Uri.parse(
+    //   "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}");
+    // var resposta = await http.get(
+    //   uri,
+    //     headers: {"Accept": "application/json"});
 
-    print(resposta.body);
+    // print(resposta.body);
 
     // final map = json.decode(response.body);
     // final itens = map["result"];
