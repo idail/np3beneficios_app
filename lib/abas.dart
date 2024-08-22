@@ -5,7 +5,7 @@ import 'package:np3beneficios_app/paginas/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Abas extends StatefulWidget {
-  late TipoAcesso tipoAcesso;
+  late String tipoAcesso;
   late String nomeUsuario = "";
   late int usuario_codigo = 0;
   //final String urlFotoPerfil;
@@ -28,7 +28,7 @@ class _AbasState extends State<Abas> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: widget.tipoAcesso == TipoAcesso.fornecedor ? 2 : 3,
+      length: widget.tipoAcesso == "fornecedor" ? 2 : 3,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Sistema de Compras'),
@@ -87,9 +87,9 @@ class _AbasState extends State<Abas> {
             // ),
             Expanded(
               child: TabBarView(
-                children: widget.tipoAcesso == TipoAcesso.fornecedor
+                children: widget.tipoAcesso == "fornecedor"
                     ? [
-                        Fornecedor(usuario_codigo: widget.usuario_codigo), // Tela de Pedidos para Fornecedor
+                        Fornecedor(usuario_codigo: widget.usuario_codigo, tipo_acesso:  widget.tipoAcesso), // Tela de Pedidos para Fornecedor
                         Container(child: Center(child: Text('Informações do Fornecedor'))),
                       ]
                     : [
@@ -126,6 +126,7 @@ class _AbasState extends State<Abas> {
 
   Future<void> _logout() async {
     // Limpar dados de autenticação
+    widget.tipoAcesso = "";
     widget.nomeUsuario = "";
     widget.usuario_codigo = 0;
     // Navegar para a tela de login

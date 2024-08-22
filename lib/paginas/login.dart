@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:np3beneficios_app/abas.dart';
 import 'package:np3beneficios_app/paginas/fornecedor.dart';
 import 'package:np3beneficios_app/paginas/gestor.dart';
-enum TipoAcesso {
-  fornecedor,
-  gestor,
-  }
+// enum TipoAcesso {
+//   fornecedor,
+//   gestor,
+//   }
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -70,7 +70,7 @@ class LoginState extends State<Login>{
 
   Future<void> logar(String usuario, String senha) async{
     var uri = Uri.parse(
-      "http://192.168.100.6/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
+      "http://192.168.15.200/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
     var resposta = await http.get(
       uri,
         headers: {"Accept": "application/json"});
@@ -81,7 +81,7 @@ class LoginState extends State<Login>{
 
     var nome_grupo = retorno["nome_grupo_usuario"];
     var nome_usuario = retorno["nome"];
-    int codigo_usuario =  retorno["codigo_usuario_autenticado"];
+    int codigo_usuario =  int.parse(retorno["codigo_usuario_autenticado"]);
     print(nome_usuario);
 
     if(nome_grupo == "Fornecedor")
@@ -92,7 +92,8 @@ class LoginState extends State<Login>{
     }
 
     try {
-    TipoAcesso tipoAcesso = (await verificaLogin(nome_grupo)) as TipoAcesso;
+    //TipoAcesso tipoAcesso = (await verificaLogin(nome_grupo)) as TipoAcesso;
+    String tipoAcesso = await verificaLogin(nome_grupo);
 
     // Redireciona para a tela que contém as abas
     Navigator.pushReplacement(
@@ -121,13 +122,13 @@ class LoginState extends State<Login>{
     }*/
   }
 
-  Future<TipoAcesso> verificaLogin(String dado) async
+  Future<String> verificaLogin(String dado) async
   {
      if(dado == "Fornecedor")
      {
-        return TipoAcesso.fornecedor;
+        return "fornecedor";
      }else{
-        return TipoAcesso.gestor;
+        return "gestor";
      }
   }
 
