@@ -9,8 +9,9 @@ import 'package:np3beneficios_app/paginas/login.dart';
 class Gestor extends StatefulWidget {
   final int usuario_codigo;
   final String tipo_Acesso;
+  final String nome_usuario;
 
-  Gestor({required this.usuario_codigo, required this.tipo_Acesso});
+  Gestor({required this.usuario_codigo, required this.tipo_Acesso, required this.nome_usuario});
 
   @override
   GestorState createState() {
@@ -54,7 +55,7 @@ class GestorState extends State<Gestor> {
     );
   }
 
-  readQRCode() async {
+  LerPedido() async {
     String code = await FlutterBarcodeScanner.scanBarcode(
       "#FFFFFF",
       "Cancelar",
@@ -62,15 +63,25 @@ class GestorState extends State<Gestor> {
       ScanMode.QR,
     );
 
+    // Verifica se a leitura foi cancelada
+    if (code != '-1') {
     setState(() {
-      texto = code != '-1' ? code : 'Não validado';
+      texto = code;
       mostrarAlerta("Informação", texto);
     });
+  } else {
+    // Se o usuário cancelar, apenas atualiza o estado sem mostrar o alerta
+    setState(() {
+      texto = 'Leitura de QR Code cancelada';
+      print(texto);
+      //mostrarAlerta("Informação", texto);
+    });
+  }
   }
 
   Future<List<Map<String, dynamic>>> PedidosGestor() async {
     var uri = Uri.parse(
-      "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
+      "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
     var resposta = await http.get(
       uri,
       headers: {"Accept": "application/json"});
@@ -113,13 +124,13 @@ class GestorState extends State<Gestor> {
             itemBuilder: (context, index) {
               final pedido = pedidos[index];
 
-              int id = int.parse(pedido['id']);
+              int id = int.parse(pedido['id'].toString());
               DateTime data = DateTime.parse(pedido['dt_pedido']);
               String descricao = pedido['descricaopedido'];
-              String status = pedido['nome'];
-              double valorPedido = double.parse(pedido['valor_total']);
-              double valorCotacao = double.parse(pedido['valor_total_cotacao']);
-              String usuario = "Rames";
+              String status = pedido['estado_pedido'];
+              double valorPedido = double.parse(pedido['valor_total'].toString());
+              double valorCotacao = double.parse(pedido['valor_total_cotacao'].toString());
+              String usuario = widget.nome_usuario;
 
               return Card(
                 child: ListTile(
@@ -136,9 +147,9 @@ class GestorState extends State<Gestor> {
                   ),
                   trailing: ElevatedButton(
                     onPressed: () {
-                      // Implementar a ação do botão aqui
+                      LerPedido();
                     },
-                    child: Text('Ação'),
+                    child: Text('Ler'),
                   ),
                 ),
               );

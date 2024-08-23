@@ -7,7 +7,7 @@ class Inicio extends StatelessWidget{
     return MaterialApp(
       title:"Vendas",
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primaryColor: Colors.blueAccent),
+      theme: ThemeData(primaryColor: Colors.blueAccent,primarySwatch: Colors.blue,),
       home: const Login(),
     );
   }

@@ -9,7 +9,9 @@ import 'package:http/http.dart' as http;
 class Fornecedor extends StatefulWidget {
   final int usuario_codigo;
   final String tipo_acesso;
-  Fornecedor({required this.usuario_codigo,required this.tipo_acesso});
+  final int codigo_fornecedor_departamento;
+  final String nome_usuario;
+  Fornecedor({required this.usuario_codigo,required this.tipo_acesso, required this.codigo_fornecedor_departamento,required this.nome_usuario});
   @override
   FornecedorState createState() {
     return new FornecedorState();
@@ -89,7 +91,7 @@ class FornecedorState extends State<Fornecedor> {
     );
   }
 
-  readQRCode() async {
+  LerPedido() async {
     String code = await FlutterBarcodeScanner.scanBarcode(
       "#FFFFFF",
       "Cancelar",
@@ -97,33 +99,25 @@ class FornecedorState extends State<Fornecedor> {
       ScanMode.QR,
     );
 
+    // Verifica se a leitura foi cancelada
+    if (code != '-1') {
     setState(() {
-      //print("vendo qr code:" + code);
-      texto = code != '-1' ? code : 'Não validado';
-
-      print(texto);
-
-      mostrarAlerta("Informação",texto);
+      texto = code;
+      mostrarAlerta("Informação", texto);
     });
-
-    // Stream<dynamic>? reader = FlutterBarcodeScanner.getBarcodeStreamReceiver(
-    //   "#FFFFFF",
-    //   "Cancelar",
-    //   false,
-    //   ScanMode.QR,
-    // );
-    // if (reader != null)
-    //   reader.listen((code) {
-    //     setState(() {
-    //       if (!tickets.contains(code.toString()) && code != '-1')
-    //         tickets.add(code.toString());
-    //     });
-    //   });
+  } else {
+    // Se o usuário cancelar, apenas atualiza o estado sem mostrar o alerta
+    setState(() {
+      texto = 'Leitura de QR Code cancelada';
+      print(texto);
+      //mostrarAlerta("Informação", texto);
+    });
+    }
   }
 
   Future<List<Map<String, dynamic>>> PedidosFornecedor() async {
     var uri = Uri.parse(
-      "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}");
+      "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_departamento_fornecedor=${widget.codigo_fornecedor_departamento}");
     var resposta = await http.get(
       uri,
       headers: {"Accept": "application/json"});
@@ -161,13 +155,13 @@ class FornecedorState extends State<Fornecedor> {
             itemBuilder: (context, index) {
               final pedido = pedidos[index];
 
-              int id = int.parse(pedido['id']);
+              int id = pedido['id'];
               DateTime data = DateTime.parse(pedido['dt_pedido']);
               String descricao = pedido['descricaopedido'];
               String status = pedido['nome'];
-              double valorPedido = double.parse(pedido['valor_total']);
-              double valorCotacao = double.parse(pedido['valor_total_cotacao']);
-              String usuario = "Rames";
+              double valorPedido = double.parse(pedido['valor_total'].toString());
+              double valorCotacao = double.parse(pedido['valor_total_cotacao'].toString());
+              String usuario = widget.nome_usuario;
 
               return Card(
                 child: ListTile(
@@ -184,9 +178,9 @@ class FornecedorState extends State<Fornecedor> {
                   ),
                   trailing: ElevatedButton(
                     onPressed: () {
-                      // Implementar a ação do botão aqui
+                      LerPedido();
                     },
-                    child: Text('Ação'),
+                    child: Text('Ler'),
                   ),
                 ),
               );

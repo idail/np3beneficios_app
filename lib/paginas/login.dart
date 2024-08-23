@@ -70,7 +70,7 @@ class LoginState extends State<Login>{
 
   Future<void> logar(String usuario, String senha) async{
     var uri = Uri.parse(
-      "http://192.168.15.200/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
+      "http://192.168.100.6/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
     var resposta = await http.get(
       uri,
         headers: {"Accept": "application/json"});
@@ -79,11 +79,17 @@ class LoginState extends State<Login>{
 
     var retorno = jsonDecode(resposta.body);
 
+    int codigo_departamento_fornecedor = 0;
+
     var nome_grupo = retorno["nome_grupo_usuario"];
     var nome_usuario = retorno["nome"];
-    int codigo_usuario =  int.parse(retorno["codigo_usuario_autenticado"]);
-    print(nome_usuario);
-
+    int codigo_usuario =  retorno["codigo_usuario_autenticado"];
+  
+    if(retorno["codigo_departamento_fornecedor"] != null && retorno["codigo_departamento_fornecedor"].toString().isNotEmpty){
+        codigo_departamento_fornecedor = retorno["codigo_departamento_fornecedor"];
+        print(codigo_departamento_fornecedor);
+    }
+    
     if(nome_grupo == "Fornecedor")
     {
       print("f");
@@ -95,11 +101,21 @@ class LoginState extends State<Login>{
     //TipoAcesso tipoAcesso = (await verificaLogin(nome_grupo)) as TipoAcesso;
     String tipoAcesso = await verificaLogin(nome_grupo);
 
-    // Redireciona para a tela que contém as abas
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => Abas(tipoAcesso: tipoAcesso, nomeUsuario: nome_usuario, usuario_codigo: codigo_usuario)),
+    if(tipoAcesso == "gestor")
+    {
+        Navigator.pushReplacement(
+          context,
+        MaterialPageRoute(builder: (context) => Abas(tipoAcesso: tipoAcesso, nomeUsuario: nome_usuario, usuario_codigo: codigo_usuario,codigo_departamento_fornecedor: 0,)),
     );
+    }else{
+        Navigator.pushReplacement(
+          context,
+        MaterialPageRoute(builder: (context) => Abas(tipoAcesso: tipoAcesso, nomeUsuario: nome_usuario, usuario_codigo: codigo_usuario,codigo_departamento_fornecedor: codigo_departamento_fornecedor,)),
+    );
+    }
+
+    // Redireciona para a tela que contém as abas
+    
 
     
   } catch (e) {

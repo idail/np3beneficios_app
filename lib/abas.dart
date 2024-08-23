@@ -8,9 +8,10 @@ class Abas extends StatefulWidget {
   late String tipoAcesso;
   late String nomeUsuario = "";
   late int usuario_codigo = 0;
+  late int codigo_departamento_fornecedor = 0;
   //final String urlFotoPerfil;
 
-  Abas({required this.tipoAcesso, required this.nomeUsuario, required this.usuario_codigo});
+  Abas({required this.tipoAcesso, required this.nomeUsuario, required this.usuario_codigo, required this.codigo_departamento_fornecedor});
 
   @override
   _AbasState createState() => _AbasState();
@@ -89,11 +90,11 @@ class _AbasState extends State<Abas> {
               child: TabBarView(
                 children: widget.tipoAcesso == "fornecedor"
                     ? [
-                        Fornecedor(usuario_codigo: widget.usuario_codigo, tipo_acesso:  widget.tipoAcesso), // Tela de Pedidos para Fornecedor
+                        Fornecedor(usuario_codigo: widget.usuario_codigo, tipo_acesso:  widget.tipoAcesso,codigo_fornecedor_departamento:widget.codigo_departamento_fornecedor,nome_usuario:widget.nomeUsuario), // Tela de Pedidos para Fornecedor
                         Container(child: Center(child: Text('Informações do Fornecedor'))),
                       ]
                     : [
-                        Gestor(usuario_codigo : widget.usuario_codigo, tipo_Acesso: "Gestor"), // Tela de Pedidos para Gestor
+                        Gestor(usuario_codigo : widget.usuario_codigo, tipo_Acesso: widget.tipoAcesso,nome_usuario:widget.nomeUsuario), // Tela de Pedidos para Gestor
                         Container(child: Center(child: Text('Relatórios do Gestor'))),
                         Container(child: Center(child: Text('Configurações do Gestor'))),
                       ],
