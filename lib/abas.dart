@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:np3beneficios_app/paginas/fornecedor.dart';
 import 'package:np3beneficios_app/paginas/gestor.dart';
+import 'package:np3beneficios_app/paginas/grafico.dart';  // Importando a tela de gráficos
+import 'package:np3beneficios_app/paginas/mapa.dart';     // Importando a tela de mapa
 import 'package:np3beneficios_app/paginas/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,9 +11,13 @@ class Abas extends StatefulWidget {
   late String nomeUsuario = "";
   late int usuario_codigo = 0;
   late int codigo_departamento_fornecedor = 0;
-  //final String urlFotoPerfil;
 
-  Abas({required this.tipoAcesso, required this.nomeUsuario, required this.usuario_codigo, required this.codigo_departamento_fornecedor});
+  Abas({
+    required this.tipoAcesso,
+    required this.nomeUsuario,
+    required this.usuario_codigo,
+    required this.codigo_departamento_fornecedor,
+  });
 
   @override
   _AbasState createState() => _AbasState();
@@ -28,109 +34,104 @@ class _AbasState extends State<Abas> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: widget.tipoAcesso == "fornecedor" ? 2 : 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Sistema de Compras'),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              UserAccountsDrawerHeader(
-                accountName: Text(widget.nomeUsuario),
-                accountEmail: Text('example@email.com'), // Opcional
-                // currentAccountPicture: CircleAvatar(
-                //   backgroundImage: NetworkImage(widget.urlFotoPerfil),
-                // ),
-              ),
-              ListTile(
-                leading: Icon(Icons.receipt),
-                title: Text('Inicio'),
-                onTap: () {
-                  Navigator.pop(context);
-                  // Ação para Home
-                },
-              ),
-              // ListTile(
-              //   leading: Icon(Icons.settings),
-              //   title: Text('Configurações'),
-              //   onTap: () {
-              //     Navigator.pop(context);
-              //     // Ação para Configurações
-              //   },
-              // ),
-              ListTile(
-                leading: Icon(Icons.logout),
-                title: Text('Sair'),
-                onTap: () {
-                  _logout();
-                  // Ação para Logout
-                },
-              ),
-            ],
-          ),
-        ),
-        body: Column(
-          children: [
-            // TabBar(
-            //   tabs: widget.tipoAcesso == TipoAcesso.fornecedor
-            //       ? [
-            //           Tab(icon: Icon(Icons.list), text: 'Pedidos'),
-            //           Tab(icon: Icon(Icons.info), text: 'Mapa'),
-            //         ]
-            //       : [
-            //           Tab(icon: Icon(Icons.list), text: 'Pedidos'),
-            //           Tab(icon: Icon(Icons.analytics), text: 'Mapa'),
-            //           Tab(icon: Icon(Icons.settings), text: 'Configurações'),
-            //         ],
-            // ),
-            Expanded(
-              child: TabBarView(
-                children: widget.tipoAcesso == "fornecedor"
-                    ? [
-                        Fornecedor(usuario_codigo: widget.usuario_codigo, tipo_acesso:  widget.tipoAcesso,codigo_fornecedor_departamento:widget.codigo_departamento_fornecedor,nome_usuario:widget.nomeUsuario), // Tela de Pedidos para Fornecedor
-                        Container(child: Center(child: Text('Informações do Fornecedor'))),
-                      ]
-                    : [
-                        Gestor(usuario_codigo : widget.usuario_codigo, tipo_Acesso: widget.tipoAcesso,nome_usuario:widget.nomeUsuario), // Tela de Pedidos para Gestor
-                        Container(child: Center(child: Text('Relatórios do Gestor'))),
-                        Container(child: Center(child: Text('Configurações do Gestor'))),
-                      ],
-              ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
+    // Define as páginas disponíveis com base no tipo de acesso
+    final List<Widget> _pages = widget.tipoAcesso == "fornecedor"
+        ? [
+            Grafico(), // Tela de Gráficos
+            Fornecedor(
+              usuario_codigo: widget.usuario_codigo,
+              tipo_acesso: widget.tipoAcesso,
+              codigo_fornecedor_departamento: widget.codigo_departamento_fornecedor,
+              nome_usuario: widget.nomeUsuario,
+            ), // Tela de Pedidos para Fornecedor
+            Mapa(), // Tela de Mapa
+          ]
+        : [
+            Grafico(), // Tela de Gráficos
+            Gestor(
+              usuario_codigo: widget.usuario_codigo,
+              tipo_Acesso: widget.tipoAcesso,
+              nome_usuario: widget.nomeUsuario,
+            ), // Tela de Pedidos para Gestor
+            Mapa(), // Tela de Mapa
+          ];
+
+    // Define os itens do menu inferior com base no tipo de acesso
+    final List<BottomNavigationBarItem> _bottomNavItems = widget.tipoAcesso == "fornecedor"
+        ? const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.receipt),
+              icon: Icon(Icons.analytics),
+              label: 'Gráficos',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.store),
               label: 'Pedidos',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.map),
               label: 'Mapa',
             ),
+          ]
+        : const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: 'School',
+              icon: Icon(Icons.analytics),
+              label: 'Gráficos',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.business),
+              label: 'Pedidos',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.map),
+              label: 'Mapa',
+            ),
+          ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Sistema de Compras'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: Text(widget.nomeUsuario),
+              accountEmail: Text(''), // Opcional
+            ),
+            ListTile(
+              leading: Icon(Icons.receipt),
+              title: Text('Inicio'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Sair'),
+              onTap: () {
+                _logout();
+              },
             ),
           ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.blue,
-          onTap: _onItemTapped,
         ),
+      ),
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: _bottomNavItems,
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey, // Cor para itens não selecionados
+        backgroundColor: Colors.white, // Cor de fundo para melhor contraste
+        onTap: _onItemTapped,
       ),
     );
   }
 
   Future<void> _logout() async {
-    // Limpar dados de autenticação
     widget.tipoAcesso = "";
     widget.nomeUsuario = "";
     widget.usuario_codigo = 0;
-    // Navegar para a tela de login
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => Login()),

@@ -117,7 +117,7 @@ class FornecedorState extends State<Fornecedor> {
 
   Future<List<Map<String, dynamic>>> PedidosFornecedor() async {
     var uri = Uri.parse(
-      "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_departamento_fornecedor=${widget.codigo_fornecedor_departamento}");
+      "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_departamento_fornecedor=${widget.codigo_fornecedor_departamento}");
     var resposta = await http.get(
       uri,
       headers: {"Accept": "application/json"});
@@ -155,7 +155,7 @@ class FornecedorState extends State<Fornecedor> {
             itemBuilder: (context, index) {
               final pedido = pedidos[index];
 
-              int id = pedido['id'];
+              int id = int.parse(pedido['id']);
               DateTime data = DateTime.parse(pedido['dt_pedido']);
               String descricao = pedido['descricaopedido'];
               String status = pedido['nome'];
@@ -180,7 +180,7 @@ class FornecedorState extends State<Fornecedor> {
                     onPressed: () {
                       LerPedido();
                     },
-                    child: Text('Ler'),
+                    child: Text('Ler QR Code'),
                   ),
                 ),
               );

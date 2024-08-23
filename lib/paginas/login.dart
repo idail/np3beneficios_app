@@ -42,17 +42,27 @@ class LoginState extends State<Login>{
   }
 
   Widget usuariotxt(){
-    return TextField(
-      controller: usuariotext,
-        decoration: InputDecoration(
-        labelText: 'Informe seu usuário',
-        border: OutlineInputBorder(
+  return TextField(
+    controller: usuariotext,
+    decoration: InputDecoration(
+      labelText: 'Informe seu usuário',
+      labelStyle: TextStyle(color: Colors.white),  // Define a cor cinza para o texto do rótulo
+      border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
-        ),
-        prefixIcon: const Icon(Icons.login),
       ),
-    );
-  }
+      prefixIcon: const Icon(Icons.login, color: Colors.grey), // Define a cor cinza para o ícone
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: Colors.white),  // Define a cor cinza para a borda
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: Colors.white),  // Define a cor cinza para a borda quando o campo está focado
+      ),
+    ),
+    style: TextStyle(color: Colors.grey),  // Define a cor cinza para o texto inserido
+  );
+}
 
   Widget senhatxt(){
       return TextField(
@@ -70,7 +80,7 @@ class LoginState extends State<Login>{
 
   Future<void> logar(String usuario, String senha) async{
     var uri = Uri.parse(
-      "http://192.168.100.6/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
+      "http://192.168.15.200/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
     var resposta = await http.get(
       uri,
         headers: {"Accept": "application/json"});
@@ -83,10 +93,10 @@ class LoginState extends State<Login>{
 
     var nome_grupo = retorno["nome_grupo_usuario"];
     var nome_usuario = retorno["nome"];
-    int codigo_usuario =  retorno["codigo_usuario_autenticado"];
+    int codigo_usuario = int.parse(retorno["codigo_usuario_autenticado"]);
   
     if(retorno["codigo_departamento_fornecedor"] != null && retorno["codigo_departamento_fornecedor"].toString().isNotEmpty){
-        codigo_departamento_fornecedor = retorno["codigo_departamento_fornecedor"];
+        codigo_departamento_fornecedor = int.parse(retorno["codigo_departamento_fornecedor"]);
         print(codigo_departamento_fornecedor);
     }
     
@@ -151,7 +161,7 @@ class LoginState extends State<Login>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFfd9203),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -189,7 +199,7 @@ class LoginState extends State<Login>{
                     backgroundColor: Colors.blue,
                   ),
                   child: const Text(
-                    'Login',
+                    'Logar',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
