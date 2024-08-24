@@ -25,37 +25,60 @@ class Abas extends StatefulWidget {
 
 class _AbasState extends State<Abas> {
   int _selectedIndex = 0;
+  late Widget _currentPage;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPage = _getPageForIndex(_selectedIndex);
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _currentPage = _getPageForIndex(index);
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Define as páginas disponíveis com base no tipo de acesso
-    final List<Widget> _pages = widget.tipoAcesso == "fornecedor"
-        ? [
-            Grafico(), // Tela de Gráficos
-            Fornecedor(
+  void _onDrawerItemTapped(String item) {
+    Navigator.pop(context); // Fecha o Drawer antes de navegar
+    if (item == 'Pedidos') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => _getPageForIndex(_selectedIndex),
+        ),
+      );
+    }
+  }
+
+  Widget _getPageForIndex(int index) {
+    if (widget.tipoAcesso == 'fornecedor') {
+      return index == 1
+          ? Fornecedor(
               usuario_codigo: widget.usuario_codigo,
               tipo_acesso: widget.tipoAcesso,
               codigo_fornecedor_departamento: widget.codigo_departamento_fornecedor,
               nome_usuario: widget.nomeUsuario,
-            ), // Tela de Pedidos para Fornecedor
-            Mapa(), // Tela de Mapa
-          ]
-        : [
-            Grafico(), // Tela de Gráficos
-            Gestor(
+            )
+          : index == 2
+              ? Mapa()
+              : Grafico(perfil: widget.tipoAcesso);
+    } else {
+      return index == 1
+          ? Gestor(
               usuario_codigo: widget.usuario_codigo,
               tipo_Acesso: widget.tipoAcesso,
               nome_usuario: widget.nomeUsuario,
-            ), // Tela de Pedidos para Gestor
-            Mapa(), // Tela de Mapa
-          ];
+            )
+          : index == 2
+              ? Mapa()
+              : Grafico(perfil: widget.tipoAcesso);
+    }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     // Define os itens do menu inferior com base no tipo de acesso
     final List<BottomNavigationBarItem> _bottomNavItems = widget.tipoAcesso == "fornecedor"
         ? const <BottomNavigationBarItem>[
@@ -96,15 +119,13 @@ class _AbasState extends State<Abas> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: Text(widget.nomeUsuario),
+              accountName: Text("Olá \n" + widget.nomeUsuario,style: TextStyle(fontSize: 13)),
               accountEmail: Text(''), // Opcional
             ),
             ListTile(
               leading: Icon(Icons.receipt),
-              title: Text('Inicio'),
-              onTap: () {
-                Navigator.pop(context);
-              },
+              title: Text('Pedidos'),
+              onTap: () => _onDrawerItemTapped('Pedidos'),
             ),
             ListTile(
               leading: Icon(Icons.logout),
@@ -116,7 +137,7 @@ class _AbasState extends State<Abas> {
           ],
         ),
       ),
-      body: _pages[_selectedIndex],
+      body: _currentPage,
       bottomNavigationBar: BottomNavigationBar(
         items: _bottomNavItems,
         currentIndex: _selectedIndex,
