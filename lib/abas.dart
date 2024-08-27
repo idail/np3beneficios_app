@@ -11,12 +11,14 @@ class Abas extends StatefulWidget {
   late String nomeUsuario = "";
   late int usuario_codigo = 0;
   late int codigo_departamento_fornecedor = 0;
+  late String login_usuario = "";
 
   Abas({
     required this.tipoAcesso,
     required this.nomeUsuario,
     required this.usuario_codigo,
     required this.codigo_departamento_fornecedor,
+    required this.login_usuario,
   });
 
   @override
@@ -70,6 +72,7 @@ class _AbasState extends State<Abas> {
               usuario_codigo: widget.usuario_codigo,
               tipo_Acesso: widget.tipoAcesso,
               nome_usuario: widget.nomeUsuario,
+              login_usuario: widget.login_usuario,
             )
           : index == 2
               ? Mapa()
@@ -84,10 +87,10 @@ class _AbasState extends State<Abas> {
         ? const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.analytics),
-              label: 'Gráficos',
+              label: 'Dashboard',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.store),
+              icon: Icon(Icons.receipt),
               label: 'Pedidos',
             ),
             BottomNavigationBarItem(
@@ -98,10 +101,10 @@ class _AbasState extends State<Abas> {
         : const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.analytics),
-              label: 'Gráficos',
+              label: 'Dashboard',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.business),
+              icon: Icon(Icons.receipt),
               label: 'Pedidos',
             ),
             BottomNavigationBarItem(

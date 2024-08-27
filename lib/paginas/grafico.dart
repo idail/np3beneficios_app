@@ -10,7 +10,8 @@ class Grafico extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gráficos de Pedidos'),
+        title: Text('Dashboard de Pedidos'),
+        centerTitle: true, // Adicione esta linha para centralizar o texto
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

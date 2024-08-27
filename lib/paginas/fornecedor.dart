@@ -1,75 +1,28 @@
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class Fornecedor extends StatefulWidget {
   final int usuario_codigo;
   final String tipo_acesso;
   final int codigo_fornecedor_departamento;
   final String nome_usuario;
-  Fornecedor({required this.usuario_codigo,required this.tipo_acesso, required this.codigo_fornecedor_departamento,required this.nome_usuario});
+
+  Fornecedor({
+    required this.usuario_codigo,
+    required this.tipo_acesso,
+    required this.codigo_fornecedor_departamento,
+    required this.nome_usuario,
+  });
+
   @override
-  FornecedorState createState() {
-    return new FornecedorState();
-  }
+  FornecedorState createState() => FornecedorState();
 }
 
 class FornecedorState extends State<Fornecedor> {
-  // ignore: unused_field
-  final _formKey = GlobalKey<FormState>();
-
-  final _nomeController = TextEditingController();
-  final _idadeController = TextEditingController();
-
-  var dados;
-
   String texto = '';
-
-  final List<String> pedidos = [
-    'Pedido 1: Pizza Margherita',
-    'Pedido 2: Hambúrguer com Batata Frita',
-    'Pedido 3: Sushi Combo',
-    'Pedido 4: Salada Caesar',
-    'Pedido 5: Sorvete de Chocolate',
-  ];
-
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _BuscaPedidos();
-
-    print(widget.tipo_acesso);
-
-  }
-
-  _BuscaPedidos() async{
-    // String pedidos = "";
-    // var uri = Uri.parse(
-    //   "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}");
-    // var resposta = await http.get(
-    //   uri,
-    //     headers: {"Accept": "application/json"});
-
-    // print(resposta.body);
-
-    // final map = json.decode(response.body);
-    // final itens = map["result"];
-    // if(map["result"] == 'Dados não encontrados!'){
-    //   mensagem();
-    // }else{
-    //   setState(() {
-    //     carregando = true;
-    //     this.dados = itens;
-
-    //   });
-
-    // }
-
-  }
 
   void mostrarAlerta(String titulo, String mensagem) {
     showDialog(
@@ -80,7 +33,7 @@ class FornecedorState extends State<Fornecedor> {
           content: Text(mensagem),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -91,7 +44,7 @@ class FornecedorState extends State<Fornecedor> {
     );
   }
 
-  LerPedido() async {
+  Future<void> LerPedido() async {
     String code = await FlutterBarcodeScanner.scanBarcode(
       "#FFFFFF",
       "Cancelar",
@@ -99,35 +52,25 @@ class FornecedorState extends State<Fornecedor> {
       ScanMode.QR,
     );
 
-    // Verifica se a leitura foi cancelada
     if (code != '-1') {
-    setState(() {
-      texto = code;
-      mostrarAlerta("Informação", texto);
-    });
-  } else {
-    // Se o usuário cancelar, apenas atualiza o estado sem mostrar o alerta
-    setState(() {
-      texto = 'Leitura de QR Code cancelada';
-      print(texto);
-      //mostrarAlerta("Informação", texto);
-    });
+      setState(() {
+        texto = code;
+        mostrarAlerta("Informação", texto);
+      });
+    } else {
+      setState(() {
+        texto = 'Leitura de QR Code cancelada';
+        print(texto);
+      });
     }
   }
 
   Future<List<Map<String, dynamic>>> PedidosFornecedor() async {
     var uri = Uri.parse(
-      "http://192.168.100.46/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_departamento_fornecedor=${widget.codigo_fornecedor_departamento}");
-    var resposta = await http.get(
-      uri,
-      headers: {"Accept": "application/json"});
-
-    print(resposta.body);
+        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_departamento_fornecedor=${widget.codigo_fornecedor_departamento}");
+    var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
-
-    print(data);
-
     return List<Map<String, dynamic>>.from(data);
   }
 
@@ -135,52 +78,106 @@ class FornecedorState extends State<Fornecedor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pedidos Fornecedor'),
+        title: const Text('Pedidos Recentes'),
+        centerTitle: true, // Centraliza o título
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: PedidosFornecedor(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Erro ao carregar os dados'));
+            return const Center(child: Text('Erro ao carregar os dados'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('Nenhum pedido encontrado'));
+            return const Center(child: Text('Nenhum pedido encontrado'));
           }
 
           final pedidos = snapshot.data!;
 
           return ListView.builder(
+            padding: const EdgeInsets.all(8.0),
             itemCount: pedidos.length,
             itemBuilder: (context, index) {
               final pedido = pedidos[index];
 
-              int id = pedido['id'];
+              int id = int.parse(pedido['id']);
+
               DateTime data = DateTime.parse(pedido['dt_pedido']);
+
+              // Formata a data para o formato brasileiro
+              String dataFormatada = DateFormat('dd/MM/yyyy').format(data);
+
+              // Exibe a data formatada
+              print(dataFormatada); // Saída: 26/07/2024
+
               String descricao = pedido['descricaopedido'];
               String status = pedido['nome'];
-              double valorPedido = double.parse(pedido['valor_total'].toString());
-              double valorCotacao = double.parse(pedido['valor_total_cotacao'].toString());
+              double valorPedido =
+                  double.parse(pedido['valor_total'].toString());
+              double valorCotacao =
+                  double.parse(pedido['valor_total_cotacao'].toString());
               String usuario = widget.nome_usuario;
 
+              // Definindo as cores do status
+              Color statusColor;
+              switch (status) {
+                case 'Pendente':
+                  statusColor = Colors.red;
+                  break;
+                case 'Em Andamento':
+                  statusColor = Colors.blue;
+                  break;
+                case 'Concluído':
+                  statusColor = Colors.green;
+                  break;
+                default:
+                  statusColor = Colors.green;
+              }
+
               return Card(
-                child: ListTile(
-                  title: Text('Pedido $id - $descricao'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Data: ${data.toLocal().toString().split(' ')[0]}'),
-                      Text('Status: $status'),
-                      Text('Valor Pedido: R\$${valorPedido.toStringAsFixed(2)}'),
-                      Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}'),
-                      Text('Usuário: $usuario'),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Usuário: $usuario',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text('Data: ${dataFormatada.toString().split(' ')[0]}'),
+                            const SizedBox(height: 4.0),
+                            Text(
+                              'Status: $status',
+                              style: TextStyle(
+                                color: statusColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          LerPedido();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6200EE), // Cor do botão
+                        ),
+                        child: const Text('Entregar',style:TextStyle(color:Colors.white),),
+                      ),
                     ],
-                  ),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      LerPedido();
-                    },
-                    child: Text('Ler QR Code'),
                   ),
                 ),
               );

@@ -1,39 +1,28 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
-import 'package:np3beneficios_app/paginas/login.dart';
+import 'package:intl/intl.dart';
 
 class Gestor extends StatefulWidget {
   final int usuario_codigo;
   final String tipo_Acesso;
   final String nome_usuario;
+  final String login_usuario; // Adicionando o login do usuário
 
-  Gestor({required this.usuario_codigo, required this.tipo_Acesso, required this.nome_usuario});
+  Gestor({
+    required this.usuario_codigo,
+    required this.tipo_Acesso,
+    required this.nome_usuario,
+    required this.login_usuario, // Adicionando o login do usuário
+  });
 
   @override
-  GestorState createState() {
-    return GestorState();
-  }
+  GestorState createState() => GestorState();
 }
 
 class GestorState extends State<Gestor> {
-  final _formKey = GlobalKey<FormState>();
-
-  final _nomeController = TextEditingController();
-  final _idadeController = TextEditingController();
-
   String texto = '';
-
-  final List<String> pedidos = [
-    'Pedido 1: Pizza Margherita',
-    'Pedido 2: Hambúrguer com Batata Frita',
-    'Pedido 3: Sushi Combo',
-    'Pedido 4: Salada Caesar',
-    'Pedido 5: Sorvete de Chocolate',
-  ];
 
   void mostrarAlerta(String titulo, String mensagem) {
     showDialog(
@@ -44,7 +33,7 @@ class GestorState extends State<Gestor> {
           content: Text(mensagem),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -55,7 +44,7 @@ class GestorState extends State<Gestor> {
     );
   }
 
-  LerPedido() async {
+  Future<void> LerPedido() async {
     String code = await FlutterBarcodeScanner.scanBarcode(
       "#FFFFFF",
       "Cancelar",
@@ -63,93 +52,155 @@ class GestorState extends State<Gestor> {
       ScanMode.QR,
     );
 
-    // Verifica se a leitura foi cancelada
     if (code != '-1') {
-    setState(() {
-      texto = code;
-      mostrarAlerta("Informação", texto);
-    });
-  } else {
-    // Se o usuário cancelar, apenas atualiza o estado sem mostrar o alerta
-    setState(() {
-      texto = 'Leitura de QR Code cancelada';
-      print(texto);
-      //mostrarAlerta("Informação", texto);
-    });
-  }
+      setState(() {
+        texto = code;
+        mostrarAlerta("Informação", texto);
+      });
+    } else {
+      setState(() {
+        texto = 'Leitura de QR Code cancelada';
+        print(texto);
+      });
+    }
   }
 
   Future<List<Map<String, dynamic>>> PedidosGestor() async {
     var uri = Uri.parse(
-      "http://192.168.100.46/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
-    var resposta = await http.get(
-      uri,
-      headers: {"Accept": "application/json"});
+        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
+    var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
-
-    print(data);
-
     return List<Map<String, dynamic>>.from(data);
   }
 
+  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     PedidosGestor();
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pedidos Gestor'),
+        title: Text('Pedidos Recentes:' + widget.login_usuario),
+        centerTitle: true, // Adicionando esta linha para centralizar o texto
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: PedidosGestor(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Erro ao carregar os dados'));
+            return const Center(child: Text('Erro ao carregar os dados'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('Nenhum pedido encontrado'));
+            return const Center(child: Text('Nenhum pedido encontrado'));
           }
 
           final pedidos = snapshot.data!;
 
           return ListView.builder(
+            padding: const EdgeInsets.all(8.0),
             itemCount: pedidos.length,
             itemBuilder: (context, index) {
               final pedido = pedidos[index];
 
               int id = int.parse(pedido['id'].toString());
               DateTime data = DateTime.parse(pedido['dt_pedido']);
+              String dataFormatada = DateFormat('dd/MM/yyyy').format(data);
               String descricao = pedido['descricaopedido'];
               String status = pedido['estado_pedido'];
               double valorPedido = double.parse(pedido['valor_total'].toString());
               double valorCotacao = double.parse(pedido['valor_total_cotacao'].toString());
-              String usuario = widget.nome_usuario;
+              String email = pedido["email"].toString();
+              String nomeUsuario = widget.nome_usuario;
+              String loginUsuario = widget.login_usuario;
+
+              // Definindo as cores do status
+              Color statusColor;
+              switch (status) {
+                case 'Pendente':
+                  statusColor = Colors.red;
+                  break;
+                case 'Em Andamento':
+                  statusColor = Colors.blue;
+                  break;
+                case 'Concluído':
+                  statusColor = Colors.green;
+                  break;
+                default:
+                  statusColor = Colors.green;
+              }
 
               return Card(
-                child: ListTile(
-                  title: Text('Pedido $id - $descricao'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Data: ${data.toLocal().toString().split(' ')[0]}'),
-                      Text('Status: $status'),
-                      Text('Valor Pedido: R\$${valorPedido.toStringAsFixed(2)}'),
-                      Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}'),
-                      Text('Usuário: $usuario'),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Codigo: $id',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                            const SizedBox(height: 4.0),
+                            Text(
+                              'Descrição: $descricao',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                            const SizedBox(height: 4.0),
+                            Text(
+                              'Nome: $loginUsuario',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            const SizedBox(height: 4.0),
+                            const Text(
+                              'Email: rdmesquita@mpac.mp.br',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text('Data: ${dataFormatada.toString().split(' ')[0]}'),
+                            const SizedBox(height: 4.0),
+                            Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}'),
+                            Text(
+                              'Status: $status',
+                              style: TextStyle(
+                                color: statusColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            //const SizedBox(height: 4.0),
+                            //Text('Valor Pedido: R\$${valorPedido.toStringAsFixed(2)}'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          LerPedido();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6200EE), // Cor do botão
+                        ),
+                        child: const Text('Entregar', style: TextStyle(color: Colors.white)),
+                      ),
                     ],
-                  ),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      LerPedido();
-                    },
-                    child: Text('Ler QR Code'),
                   ),
                 ),
               );
