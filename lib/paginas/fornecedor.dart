@@ -69,7 +69,7 @@ class FornecedorState extends State<Fornecedor> {
 
   Future<List<Map<String, dynamic>>> PedidosFornecedor() async {
     var uri = Uri.parse(
-        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_fornecedor_departamento=${widget.codigo_fornecedor_departamento}");
+        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_fornecedor_departamento=${widget.codigo_fornecedor_departamento}");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
@@ -86,7 +86,7 @@ class FornecedorState extends State<Fornecedor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pedidos Recentes: ' + widget.login_usuario),
+        title: Text('Pedidos Recentes'),
         centerTitle: true,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
@@ -128,7 +128,7 @@ class FornecedorState extends State<Fornecedor> {
                   statusColor = Colors.green;
                   break;
                 default:
-                  status = "Entregar";
+                  //status = "Entregar";
                   statusColor = Colors.green;
               }
 
@@ -149,6 +149,7 @@ class FornecedorState extends State<Fornecedor> {
                               'Código: $id',
                               style: const TextStyle(
                                 fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 4.0),
@@ -156,20 +157,22 @@ class FornecedorState extends State<Fornecedor> {
                               'Descrição: $descricao',
                               style: const TextStyle(
                                 fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            // const SizedBox(height: 4.0),
-                            // Text(
-                            //   'Usuário: ${widget.login_usuario}',
-                            //   style: const TextStyle(
-                            //     fontSize: 16.0,
-                            //     fontWeight: FontWeight.bold,
-                            //   ),
-                            // ),
-                            const SizedBox(height: 8.0),
-                            Text('Data: $dataFormatada'),
                             const SizedBox(height: 4.0),
-                            Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}'),
+                            Text(
+                              'Usuário: ${widget.login_usuario}',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4.0),
+                            Text('Data: $dataFormatada',style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,),),
+                            const SizedBox(height: 4.0),
+                            Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}',style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,),),
+                            const SizedBox(height: 4.0),
                             Text(
                               'Status: $status',
                               style: TextStyle(

@@ -129,11 +129,11 @@ class _AbasState extends State<Abas> {
               accountName: Text("Olá \n" + widget.nomeUsuario,style: TextStyle(fontSize: 13)),
               accountEmail: Text(''), // Opcional
             ),
-            ListTile(
-              leading: Icon(Icons.receipt),
-              title: Text('Pedidos'),
-              onTap: () => _onDrawerItemTapped('Pedidos'),
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.receipt),
+            //   title: Text('Pedidos'),
+            //   onTap: () => _onDrawerItemTapped('Pedidos'),
+            // ),
             ListTile(
               leading: Icon(Icons.logout),
               title: Text('Sair'),

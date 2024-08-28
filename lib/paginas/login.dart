@@ -71,12 +71,15 @@ class LoginState extends State<Login> {
 
   Future<void> logar(String usuario, String senha) async {
     var uri = Uri.parse(
-        "http://192.168.100.6/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
+        "http://192.168.15.200/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
     print(resposta.body);
     var retorno = jsonDecode(resposta.body);
 
-    int codigo_departamento_fornecedor = 0;
+    if(retorno == "nenhum usuario localizado"){
+      mostrarAlerta("Informação", "Favor verificar os dados preenchidos");
+    }else{
+      int codigo_departamento_fornecedor = 0;
     var nome_grupo = retorno["nome_grupo_usuario"];
     var nome_usuario = retorno["nome"];
     var login_usuario = retorno["login_usuario"];
@@ -85,7 +88,7 @@ class LoginState extends State<Login> {
 
     if (retorno["codigo_departamento_fornecedor"] != null &&
         retorno["codigo_departamento_fornecedor"].toString().isNotEmpty) {
-      codigo_departamento_fornecedor =  retorno["codigo_departamento_fornecedor"];
+      codigo_departamento_fornecedor =  int.parse(retorno["codigo_departamento_fornecedor"]);
       print(codigo_departamento_fornecedor);
     }
 
@@ -128,6 +131,7 @@ class LoginState extends State<Login> {
       }
     } catch (e) {
       print('Erro durante a autenticação: $e');
+    } 
     }
   }
 

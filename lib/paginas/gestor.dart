@@ -69,7 +69,7 @@ class GestorState extends State<Gestor> {
 
   Future<List<Map<String, dynamic>>> PedidosGestor() async {
     var uri = Uri.parse(
-        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
+        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
@@ -86,7 +86,7 @@ class GestorState extends State<Gestor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pedidos Recentes:' + widget.login_usuario),
+        title: Text('Pedidos Recentes'),
         centerTitle: true, // Adicionando esta linha para centralizar o texto
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
@@ -118,6 +118,7 @@ class GestorState extends State<Gestor> {
               String email = widget.email_usuario;
               String nomeUsuario = widget.nome_usuario;
               String loginUsuario = widget.login_usuario;
+              String fornecedor = pedido["Fornecedor"];
 
               // Definindo as cores do status
               Color statusColor;
@@ -153,6 +154,7 @@ class GestorState extends State<Gestor> {
                               'Codigo: $id',
                               style: const TextStyle(
                                 fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 4.0),
@@ -160,6 +162,15 @@ class GestorState extends State<Gestor> {
                               'Descrição: $descricao',
                               style: const TextStyle(
                                 fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4.0),
+                            Text(
+                              'Fornecedor: $fornecedor',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 4.0),
@@ -167,7 +178,7 @@ class GestorState extends State<Gestor> {
                               'Nome: $loginUsuario',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16.0,
+                                fontSize: 14.0,
                               ),
                             ),
                             const SizedBox(height: 4.0),
@@ -175,17 +186,20 @@ class GestorState extends State<Gestor> {
                               'Email: $email',
                               style: const TextStyle(
                                 fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 8.0),
-                            Text('Data: ${dataFormatada.toString().split(' ')[0]}'),
+                            Text('Data: ${dataFormatada.toString().split(' ')[0]}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
                             const SizedBox(height: 4.0),
-                            Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}'),
+                            Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
+                            const SizedBox(height: 4.0),
                             Text(
                               'Status: $status',
                               style: TextStyle(
                                 color: statusColor,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 14
                               ),
                             ),
                             //const SizedBox(height: 4.0),
@@ -201,7 +215,7 @@ class GestorState extends State<Gestor> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF6200EE), // Cor do botão
                         ),
-                        child: const Text('Entregar', style: TextStyle(color: Colors.white)),
+                        child: const Text('Receber', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
