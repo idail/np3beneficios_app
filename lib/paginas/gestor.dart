@@ -8,13 +8,15 @@ class Gestor extends StatefulWidget {
   final int usuario_codigo;
   final String tipo_Acesso;
   final String nome_usuario;
-  final String login_usuario; // Adicionando o login do usuário
+  final String login_usuario;
+  final String email_usuario; // Adicionando o login do usuário
 
   Gestor({
     required this.usuario_codigo,
     required this.tipo_Acesso,
     required this.nome_usuario,
-    required this.login_usuario, // Adicionando o login do usuário
+    required this.login_usuario,
+    required this.email_usuario, // Adicionando o login do usuário
   });
 
   @override
@@ -67,7 +69,7 @@ class GestorState extends State<Gestor> {
 
   Future<List<Map<String, dynamic>>> PedidosGestor() async {
     var uri = Uri.parse(
-        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
+        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
@@ -113,7 +115,7 @@ class GestorState extends State<Gestor> {
               String status = pedido['estado_pedido'];
               double valorPedido = double.parse(pedido['valor_total'].toString());
               double valorCotacao = double.parse(pedido['valor_total_cotacao'].toString());
-              String email = pedido["email"].toString();
+              String email = widget.email_usuario;
               String nomeUsuario = widget.nome_usuario;
               String loginUsuario = widget.login_usuario;
 
@@ -130,6 +132,7 @@ class GestorState extends State<Gestor> {
                   statusColor = Colors.green;
                   break;
                 default:
+                  status = "Receber";
                   statusColor = Colors.green;
               }
 
@@ -168,9 +171,9 @@ class GestorState extends State<Gestor> {
                               ),
                             ),
                             const SizedBox(height: 4.0),
-                            const Text(
-                              'Email: rdmesquita@mpac.mp.br',
-                              style: TextStyle(
+                            Text(
+                              'Email: $email',
+                              style: const TextStyle(
                                 fontSize: 14.0,
                               ),
                             ),

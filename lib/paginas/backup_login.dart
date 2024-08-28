@@ -125,18 +125,18 @@ class LoginState extends State<Login>{
     //TipoAcesso tipoAcesso = (await verificaLogin(nome_grupo)) as TipoAcesso;
     String tipoAcesso = await verificaLogin(nome_grupo);
 
-    if(tipoAcesso == "gestor")
-    {
-        Navigator.pushReplacement(
-          context,
-        MaterialPageRoute(builder: (context) => Abas(tipoAcesso: tipoAcesso, nomeUsuario: nome_usuario, usuario_codigo: codigo_usuario,codigo_departamento_fornecedor: 0,)),
-    );
-    }else{
-        Navigator.pushReplacement(
-          context,
-        MaterialPageRoute(builder: (context) => Abas(tipoAcesso: tipoAcesso, nomeUsuario: nome_usuario, usuario_codigo: codigo_usuario,codigo_departamento_fornecedor: codigo_departamento_fornecedor,)),
-    );
-    }
+    // if(tipoAcesso == "gestor")
+    // {
+    //     Navigator.pushReplacement(
+    //       context,
+    //     MaterialPageRoute(builder: (context) => Abas(tipoAcesso: tipoAcesso, nomeUsuario: nome_usuario, usuario_codigo: codigo_usuario,codigo_departamento_fornecedor: 0,)),
+    // );
+    // }else{
+    //     Navigator.pushReplacement(
+    //       context,
+    //     MaterialPageRoute(builder: (context) => Abas(tipoAcesso: tipoAcesso, nomeUsuario: nome_usuario, usuario_codigo: codigo_usuario,codigo_departamento_fornecedor: codigo_departamento_fornecedor,)),
+    // );
+    // }
 
     // Redireciona para a tela que contém as abas
     

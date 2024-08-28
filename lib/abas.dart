@@ -12,6 +12,7 @@ class Abas extends StatefulWidget {
   late int usuario_codigo = 0;
   late int codigo_departamento_fornecedor = 0;
   late String login_usuario = "";
+  late String email_usuario = "";
 
   Abas({
     required this.tipoAcesso,
@@ -19,6 +20,7 @@ class Abas extends StatefulWidget {
     required this.usuario_codigo,
     required this.codigo_departamento_fornecedor,
     required this.login_usuario,
+    required this.email_usuario,
   });
 
   @override
@@ -62,6 +64,7 @@ class _AbasState extends State<Abas> {
               tipo_acesso: widget.tipoAcesso,
               codigo_fornecedor_departamento: widget.codigo_departamento_fornecedor,
               nome_usuario: widget.nomeUsuario,
+              login_usuario: widget.login_usuario,
             )
           : index == 2
               ? Mapa()
@@ -73,6 +76,7 @@ class _AbasState extends State<Abas> {
               tipo_Acesso: widget.tipoAcesso,
               nome_usuario: widget.nomeUsuario,
               login_usuario: widget.login_usuario,
+              email_usuario:widget.email_usuario,
             )
           : index == 2
               ? Mapa()

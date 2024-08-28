@@ -1,5 +1,5 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class Grafico extends StatelessWidget {
   final String perfil; // Tipo de perfil ('fornecedor' ou 'gestor')
@@ -17,6 +17,34 @@ class Grafico extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Gráficos de valores como na imagem fornecida
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildValueCard(
+                  context,
+                  'VALORES DO EMPENHO',
+                  'R\$ 71.358,96',
+                  '7% de R\$ 1.000.000,00',
+                  Colors.green[900]!,
+                ),
+                _buildValueCard(
+                  context,
+                  'VALORES CONSUMIDOS',
+                  'R\$ 1.161,50',
+                  '0% de R\$ 1.000.000,00',
+                  Colors.purple,
+                ),
+                _buildValueCard(
+                  context,
+                  'SALDO ATUAL',
+                  'R\$ 70.197,46',
+                  '0% de R\$ 1.000.000,00',
+                  Colors.green,
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
             // Gráfico de Pizza
             Expanded(
               child: PieChart(
@@ -52,6 +80,48 @@ class Grafico extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildValueCard(BuildContext context, String title, String value, String percentage, Color color) {
+    return Container(
+      width: MediaQuery.of(context).size.width / 3.5,
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.shopping_basket, color: Colors.white), // Icone similar ao da imagem
+          SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            percentage,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
     );
   }

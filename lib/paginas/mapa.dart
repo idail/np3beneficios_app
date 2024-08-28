@@ -1,46 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
-class Mapa extends StatelessWidget {
-  final double fornecedorLat = -23.5505; // Latitude do Fornecedor
-  final double fornecedorLng = -46.6333; // Longitude do Fornecedor
-  final double gestorLat = -22.9035; // Latitude do Gestor
-  final double gestorLng = -43.2096; // Longitude do Gestor
+class Mapa extends StatefulWidget {
+  @override
+  MapaState createState() => MapaState();
+}
+
+class MapaState extends State<Mapa> {
+  // Controlador do Google Map
+  GoogleMapController? _controladorMapa;
+
+  // Pontos específicos das duas localidades
+  final LatLng _pontoA = LatLng(-20.434351, -54.616956); // Rua 14 de Julho, 5141
+  final LatLng _pontoB = LatLng(-20.457685294130176, -54.58712544147332); // Av. Afonso Pena, 4909
+
+  // Variável para armazenar a distância calculada
+  String _distancia = "0 km";
+
+  @override
+  void initState() {
+    super.initState();
+    _calcularDistancia(); // Calcula a distância assim que a tela é carregada
+  }
+
+  // Método para calcular a distância entre dois pontos
+  void _calcularDistancia() {
+    final distanciaEmMetros = Geolocator.distanceBetween(
+      _pontoA.latitude,
+      _pontoA.longitude,
+      _pontoB.latitude,
+      _pontoB.longitude,
+    );
+
+    setState(() {
+      _distancia = (distanciaEmMetros / 1000).toStringAsFixed(2) + " km";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // URL do Google Maps para exibir a rota entre dois pontos
-    String googleMapsUrl =
-        'https://www.google.com/maps/dir/?api=1&origin=$fornecedorLat,$fornecedorLng&destination=$gestorLat,$gestorLng&travelmode=driving';
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Distância entre Fornecedor e Gestor'),
+        title: Text('Distância entre Dois Pontos'),
       ),
-      body: InAppWebView(
-        initialUrlRequest: URLRequest(
-                    url: WebUri(googleMapsUrl), // Use WebUri.parse para conversão correta
-        ),
-        initialOptions: InAppWebViewGroupOptions(
-          crossPlatform: InAppWebViewOptions(
-            javaScriptEnabled: true,
+      body: Column(
+        children: [
+          Expanded(
+            child: GoogleMap(
+              onMapCreated: (controller) => _controladorMapa = controller,
+              initialCameraPosition: CameraPosition(
+                target: _pontoA, // Centralizando o mapa no ponto A
+                zoom: 14,
+              ),
+              markers: {
+                Marker(markerId: MarkerId('pontoA'), position: _pontoA),
+                Marker(markerId: MarkerId('pontoB'), position: _pontoB),
+              },
+            ),
           ),
-        ),
-        onWebViewCreated: (InAppWebViewController controller) {
-          print('WebView Created');
-        },
-        onLoadStart: (InAppWebViewController controller, Uri? url) {
-          print('Loading: $url');
-        },
-        onLoadStop: (InAppWebViewController controller, Uri? url) {
-          print('Loaded: $url');
-        },
-        onLoadError: (InAppWebViewController controller, Uri? url, int code, String message) {
-          print('Error: $code, $message');
-        },
-        onLoadHttpError: (InAppWebViewController controller, Uri? url, int statusCode, String description) {
-          print('HTTP Error: $statusCode, $description');
-        },
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text('Distância: $_distancia', style: TextStyle(fontSize: 20)),
+          ),
+        ],
       ),
     );
   }

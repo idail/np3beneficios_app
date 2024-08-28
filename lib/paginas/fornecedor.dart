@@ -7,14 +7,16 @@ import 'package:intl/intl.dart';
 class Fornecedor extends StatefulWidget {
   final int usuario_codigo;
   final String tipo_acesso;
-  final int codigo_fornecedor_departamento;
+  final int codigo_fornecedor_departamento; // Adicionando o código do departamento do fornecedor
   final String nome_usuario;
+  final String login_usuario;
 
   Fornecedor({
     required this.usuario_codigo,
     required this.tipo_acesso,
-    required this.codigo_fornecedor_departamento,
+    required this.codigo_fornecedor_departamento, // Adicionando o código do departamento do fornecedor
     required this.nome_usuario,
+    required this.login_usuario,
   });
 
   @override
@@ -67,7 +69,7 @@ class FornecedorState extends State<Fornecedor> {
 
   Future<List<Map<String, dynamic>>> PedidosFornecedor() async {
     var uri = Uri.parse(
-        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_departamento_fornecedor=${widget.codigo_fornecedor_departamento}");
+        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_fornecedor_departamento=${widget.codigo_fornecedor_departamento}");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
@@ -75,11 +77,17 @@ class FornecedorState extends State<Fornecedor> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    PedidosFornecedor();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pedidos Recentes'),
-        centerTitle: true, // Centraliza o título
+        title: Text('Pedidos Recentes: ' + widget.login_usuario),
+        centerTitle: true,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: PedidosFornecedor(),
@@ -100,23 +108,12 @@ class FornecedorState extends State<Fornecedor> {
             itemBuilder: (context, index) {
               final pedido = pedidos[index];
 
-              int id = int.parse(pedido['id']);
-
+              int id = int.parse(pedido['id'].toString());
               DateTime data = DateTime.parse(pedido['dt_pedido']);
-
-              // Formata a data para o formato brasileiro
               String dataFormatada = DateFormat('dd/MM/yyyy').format(data);
-
-              // Exibe a data formatada
-              print(dataFormatada); // Saída: 26/07/2024
-
               String descricao = pedido['descricaopedido'];
               String status = pedido['nome'];
-              double valorPedido =
-                  double.parse(pedido['valor_total'].toString());
-              double valorCotacao =
-                  double.parse(pedido['valor_total_cotacao'].toString());
-              String usuario = widget.nome_usuario;
+              double valorCotacao = double.parse(pedido['valor_total_cotacao'].toString());
 
               // Definindo as cores do status
               Color statusColor;
@@ -131,6 +128,7 @@ class FornecedorState extends State<Fornecedor> {
                   statusColor = Colors.green;
                   break;
                 default:
+                  status = "Entregar";
                   statusColor = Colors.green;
               }
 
@@ -148,15 +146,30 @@ class FornecedorState extends State<Fornecedor> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Usuário: $usuario',
+                              'Código: $id',
                               style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0,
+                                fontSize: 14.0,
                               ),
                             ),
-                            const SizedBox(height: 8.0),
-                            Text('Data: ${dataFormatada.toString().split(' ')[0]}'),
                             const SizedBox(height: 4.0),
+                            Text(
+                              'Descrição: $descricao',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                            // const SizedBox(height: 4.0),
+                            // Text(
+                            //   'Usuário: ${widget.login_usuario}',
+                            //   style: const TextStyle(
+                            //     fontSize: 16.0,
+                            //     fontWeight: FontWeight.bold,
+                            //   ),
+                            // ),
+                            const SizedBox(height: 8.0),
+                            Text('Data: $dataFormatada'),
+                            const SizedBox(height: 4.0),
+                            Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}'),
                             Text(
                               'Status: $status',
                               style: TextStyle(
@@ -173,9 +186,9 @@ class FornecedorState extends State<Fornecedor> {
                           LerPedido();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6200EE), // Cor do botão
+                          backgroundColor: const Color(0xFF6200EE),
                         ),
-                        child: const Text('Entregar',style:TextStyle(color:Colors.white),),
+                        child: const Text('Entregar', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
