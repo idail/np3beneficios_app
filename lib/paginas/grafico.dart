@@ -1,24 +1,84 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-
+import 'package:http/http.dart' as http;
 class Grafico extends StatefulWidget {
   final String perfil;
+  final int codigo_usuario;
 
-  const Grafico({super.key, required this.perfil});
+  const Grafico({super.key, required this.perfil, required this.codigo_usuario});
 
   @override
   GraficoState createState() => GraficoState();
 }
 
 class GraficoState extends State<Grafico> {
-  double valorEmpenho = 71358.96;
-  double valorConsumido = 1161.50;
-  double saldoAtual = 70197.46;
-  double valorRecebido = 30000.00;
-  double valorPendente = 15000.00;
-  double valorTotal = 1000000.00;
+  double valorEmpenho = 0;
+  double valorConsumido = 0;
+  double saldoAtual = 0;
+  double valorRecebido = 0;
+  double valorPendente = 0;
+  double valorTotal = 0;
+  String valorConsumidoString = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    carregaInformacoes(widget.perfil,widget.codigo_usuario);
+  }
+
+  Future<void> carregaInformacoes(String perfil,int codigo_usuario) async
+  {
+    var busca_empenho = "valor_empenho";
+    var busca_valor_cotacao = "valor_cotacao";
+    if(perfil == "gestor")
+    {
+      var uri = Uri.parse(
+        "http://192.168.100.46/np3beneficios_appphp/api/pedidos/grafico.php?perfil=$perfil&codigo_usuario=$codigo_usuario&tipo_busca=$busca_empenho");
+      var resposta = await http.get(uri, headers: {"Accept": "application/json"});
+      var retorno = jsonDecode(resposta.body);
+
+      for (var i = 0; i < retorno.length; i++) {
+        if(retorno[i]["valor_empenho"] > 0){
+          print(retorno[i]["valor_empenho"]);
+          valorEmpenho = retorno[i]["valor_empenho"];
+          print(valorEmpenho);
+        }else{
+          print("zerado");
+        }
+      }
+
+      var uri_cotacao = Uri.parse(
+        "http://192.168.100.46/np3beneficios_appphp/api/pedidos/grafico.php?perfil=$perfil&codigo_usuario=$codigo_usuario&tipo_busca=$busca_valor_cotacao");
+      var resposta_cotacao = await http.get(uri_cotacao, headers: {"Accept": "application/json"});
+      var retorno_cotacao = jsonDecode(resposta_cotacao.body);
+      print(retorno_cotacao);
+
+      // Suponha que você tenha o valor assim:
+      List<Map<String, int>> resultado = [{ 'SUM(valor_total_cotacao)': 662 }];
+
+      // Acessar o primeiro item da lista (que é um mapa)
+      Map<String, int> mapa = resultado[0];
+
+      // Acessar o valor do mapa usando a chave
+      int valorC = mapa['SUM(valor_total_cotacao)'] ?? 0;
+
+      valorConsumido = valorC.toDouble();
+
+      print(valorC); // Output: 662
+
+      print(valorConsumido);
+
+
+
+      if(valorEmpenho != "" && valorConsumido != "")
+        saldoAtual = valorEmpenho - valorConsumido;
+    }
+  }
 
 
   @override
@@ -43,7 +103,7 @@ class GraficoState extends State<Grafico> {
                       icon: Icons.shopping_cart,
                       title: widget.perfil == 'gestor' ? 'VALORES DO EMPENHO' : 'VALOR RECEBIDO',
                       value: widget.perfil == 'gestor' ? valorEmpenho : valorRecebido,
-                      percentage: widget.perfil == 'gestor' ? valorEmpenho / valorTotal * 100 : valorRecebido / valorTotal * 100,
+                      percentage: widget.perfil == 'gestor' ? valorRecebido : valorRecebido / valorTotal * 100,
                       color: Colors.green.shade900,
                     ),
                     const SizedBox(width: 8.0),
@@ -221,12 +281,12 @@ class GraficoState extends State<Grafico> {
                 ),
               ),
               const SizedBox(height: 4.0),
-              Text(
-                '${percentage.toStringAsFixed(0)}%',
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
+              // Text(
+              //   '${percentage.toStringAsFixed(0)}%',
+              //   style: const TextStyle(
+              //     color: Colors.white,
+              //   ),
+              // ),
             ],
           ),
         ),
