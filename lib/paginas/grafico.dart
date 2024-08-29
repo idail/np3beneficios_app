@@ -1,10 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class Grafico extends StatefulWidget {
   final String perfil;
 
-  Grafico({required this.perfil});
+  const Grafico({super.key, required this.perfil});
 
   @override
   GraficoState createState() => GraficoState();
@@ -17,6 +19,7 @@ class GraficoState extends State<Grafico> {
   double valorRecebido = 30000.00;
   double valorPendente = 15000.00;
   double valorTotal = 1000000.00;
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +44,9 @@ class GraficoState extends State<Grafico> {
                       title: widget.perfil == 'gestor' ? 'VALORES DO EMPENHO' : 'VALOR RECEBIDO',
                       value: widget.perfil == 'gestor' ? valorEmpenho : valorRecebido,
                       percentage: widget.perfil == 'gestor' ? valorEmpenho / valorTotal * 100 : valorRecebido / valorTotal * 100,
-                      color: Colors.green,
+                      color: Colors.green.shade900,
                     ),
-                    SizedBox(width: 8.0),
+                    const SizedBox(width: 8.0),
                     // Card 2
                     _buildCard(
                       icon: Icons.shopping_cart,
@@ -52,20 +55,20 @@ class GraficoState extends State<Grafico> {
                       percentage: widget.perfil == 'gestor' ? valorConsumido / valorTotal * 100 : valorPendente / valorTotal * 100,
                       color: Colors.purple,
                     ),
-                    SizedBox(width: 8.0),
+                    const SizedBox(width: 8.0),
                     // Card 3
                     _buildCard(
                       icon: Icons.shopping_cart,
                       title: 'SALDO ATUAL',
                       value: saldoAtual,
                       percentage: saldoAtual / valorTotal * 100,
-                      color: Colors.green[300]!,
+                      color: Colors.lightGreen.shade600,
                     ),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             // Gráfico de Pizza com Legendas à Esquerda
             Expanded(
               child: Row(
@@ -80,7 +83,7 @@ class GraficoState extends State<Grafico> {
                       _buildLegendItem('Outros', Colors.blue),
                     ],
                   ),
-                  SizedBox(width: 16.0),
+                  const SizedBox(width: 16.0),
                   Expanded(
                     child: PieChart(
                       PieChartData(
@@ -98,85 +101,88 @@ class GraficoState extends State<Grafico> {
                 ],
               ),
             ),
-            SizedBox(height: 16.0),
-            // Gráfico de Barras
+            const SizedBox(height: 16.0),
+            // Novo Gráfico de Crescimento com Animação
             Expanded(
-              child: BarChart(
-                BarChartData(
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barRods: [
-                        BarChartRodData(
-                          toY: 5,
-                          color: Colors.green,
-                          width: 20,
-                        ),
+              child: LineChart(
+                LineChartData(
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: [
+                        const FlSpot(0, 10),
+                        const FlSpot(1, 200),
+                        const FlSpot(2, 400),
+                        const FlSpot(3, 300),
+                        const FlSpot(4, 500),
+                        const FlSpot(5, 500),
+                        const FlSpot(6, 500),
+                        const FlSpot(7, 500),
+                        const FlSpot(8, 500),
+                        const FlSpot(9, 500),
+                        const FlSpot(10, 500),
+                        const FlSpot(11, 500),
+                        const FlSpot(12, 500),
                       ],
-                      showingTooltipIndicators: [0],
-                    ),
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [
-                        BarChartRodData(
-                          toY: 3,
-                          color: Colors.orange,
-                          width: 20,
-                        ),
-                      ],
-                      showingTooltipIndicators: [0],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [
-                        BarChartRodData(
-                          toY: 2,
-                          color: Colors.red,
-                          width: 20,
-                        ),
-                      ],
-                      showingTooltipIndicators: [0],
+                      isCurved: true,
+                      color: Colors.green,
+                      barWidth: 4,
+                      belowBarData: BarAreaData(show: true, color: Colors.green.withOpacity(0.3)),
                     ),
                   ],
                   titlesData: FlTitlesData(
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        getTitlesWidget: (double value, TitleMeta meta) {
+                        reservedSize: 40, // Ajusta o espaço reservado para os títulos
+                        getTitlesWidget: (value, meta) {
                           const style = TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           );
-                          Widget text;
-                          switch (value.toInt()) {
-                            case 0:
-                              text = const Text('Aprovados', style: style);
-                              break;
-                            case 1:
-                              text = const Text('Pendentes', style: style);
-                              break;
-                            case 2:
-                              text = const Text('Cancelados', style: style);
-                              break;
-                            default:
-                              text = const Text('', style: style);
-                              break;
-                          }
-                          return SideTitleWidget(
-                            axisSide: meta.axisSide,
-                            space: 8, // Espaçamento entre o título e o gráfico
-                            child: text,
+
+                          // Lista de meses
+                          final months = [
+                            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
+                            'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+                          ];
+
+                          // Usando o valor do eixo X para acessar a lista de meses
+                          final monthIndex = value.toInt();
+
+                          return Text(
+                            monthIndex >= 0 && monthIndex < months.length ? months[monthIndex] : '',
+                            style: style,
                           );
                         },
                       ),
                     ),
                     leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40, // Ajusta o espaço reservado para os títulos
+                        getTitlesWidget: (value, meta) {
+                          const style = TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          );
+                          return Text(
+                            value.toInt().toString(),
+                            style: style,
+                          );
+                        },
+                      ),
                     ),
                   ),
-                  gridData: FlGridData(show: true),
-                  borderData: FlBorderData(show: false),
+                  gridData: const FlGridData(show: true),
+                  borderData: FlBorderData(show: true),
+                  lineTouchData: const LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      //tooltipBgColor: Colors.greenAccent,
+                    ),
+                    handleBuiltInTouches: true,
+                  ),
                 ),
               ),
             ),
@@ -197,28 +203,28 @@ class GraficoState extends State<Grafico> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(icon, color: Colors.white),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 4.0),
+              const SizedBox(height: 4.0),
               Text(
                 'R\$ ${value.toStringAsFixed(2)}',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 4.0),
+              const SizedBox(height: 4.0),
               Text(
-                '${percentage.toStringAsFixed(0)}% de R\$ ${valorTotal.toStringAsFixed(2)}',
-                style: TextStyle(
-                  color: Colors.white70,
+                '${percentage.toStringAsFixed(0)}%',
+                style: const TextStyle(
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -234,11 +240,11 @@ class GraficoState extends State<Grafico> {
       child: Row(
         children: [
           Container(
-            width: 12,
-            height: 12,
+            width: 16,
+            height: 16,
             color: color,
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8.0),
           Text(text),
         ],
       ),

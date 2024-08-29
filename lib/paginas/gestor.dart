@@ -69,7 +69,7 @@ class GestorState extends State<Gestor> {
 
   Future<List<Map<String, dynamic>>> PedidosGestor() async {
     var uri = Uri.parse(
-        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
+        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
@@ -135,7 +135,7 @@ class GestorState extends State<Gestor> {
                   statusColor = Colors.green;
                   break;
                 default:
-                  status = "Receber";
+                  //status = "Receber";
                   statusColor = Colors.green;
               }
 
@@ -176,14 +176,14 @@ class GestorState extends State<Gestor> {
                               ),
                             ),
                             const SizedBox(height: 4.0),
-                            Text(
-                              'Nome: $loginUsuario',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14.0,
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
+                            // Text(
+                            //   'Nome: $loginUsuario',
+                            //   style: const TextStyle(
+                            //     fontWeight: FontWeight.bold,
+                            //     fontSize: 14.0,
+                            //   ),
+                            // ),
+                            // const SizedBox(height: 4.0),
                             Text(
                               'Email: $email',
                               style: const TextStyle(

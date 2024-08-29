@@ -14,7 +14,7 @@ class Abas extends StatefulWidget {
   late String login_usuario = "";
   late String email_usuario = "";
 
-  Abas({
+  Abas({super.key, 
     required this.tipoAcesso,
     required this.nomeUsuario,
     required this.usuario_codigo,
