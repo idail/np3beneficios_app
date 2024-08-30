@@ -8,7 +8,7 @@ class Mapa extends StatefulWidget {
   late String tipo_perfil = "";
   late int codigo_usuario = 0;
 
-  Mapa({required this.tipo_perfil,required this.codigo_usuario});
+  Mapa({super.key,required this.tipo_perfil,required this.codigo_usuario});
 
   @override
   MapaState createState() => MapaState();
@@ -28,19 +28,28 @@ class MapaState extends State<Mapa> {
   @override
   void initState() {
     super.initState();
-    _calcularDistancia(); // Calcula a distância assim que a tela é carregada
+    _calcularDistancia(widget.tipo_perfil,widget.codigo_usuario); // Calcula a distância assim que a tela é carregada
   }
 
   // Método para calcular a distância entre dois pontos
-  Future<void> _calcularDistancia()async {
+  Future<void> _calcularDistancia(String perfil,int codigo_usuario)async {
+
+    //print(widget.tipo_perfil + "-" + widget.codigo_usuario);
 
     var uri = Uri.parse(
-        "http://192.168.100.6/np3beneficios_appphp/api/mapa/localizacao.php?perfil=$widget.tipo_perfil&codigo_usuario=$widget.codigo_usuario");
+        "http://192.168.15.200/np3beneficios_appphp/api/mapa/localizacao.php?perfil=$perfil&codigo_usuario=$codigo_usuario");
     var resposta_gestor = await http.get(uri, headers: {"Accept": "application/json"});
-    print(resposta_gestor.body);
-    var retorno = jsonDecode(resposta_gestor.body);
+    //print(resposta_gestor.body);
+    var retorno_gestor = jsonDecode(resposta_gestor.body);
 
-    print(retorno);
+    print(retorno_gestor);
+
+    var uri_fornecedor = Uri.parse(
+        "http://192.168.15.200/np3beneficios_appphp/api/mapa/localizacao.php?perfil=$perfil&codigo_usuario=$codigo_usuario");
+    var resposta_fornecedor = await http.get(uri_fornecedor, headers: {"Accept": "application/json"});
+    //print(resposta_fornecedor.body);
+    var retorno_fornecedor = jsonDecode(resposta_fornecedor.body);
+    print(retorno_fornecedor);
 
     final distanciaEmMetros = Geolocator.distanceBetween(
       _pontoA.latitude,

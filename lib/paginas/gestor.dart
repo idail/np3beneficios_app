@@ -9,14 +9,14 @@ class Gestor extends StatefulWidget {
   final String tipo_Acesso;
   final String nome_usuario;
   final String login_usuario;
-  final String email_usuario; // Adicionando o login do usuário
+  final String email_usuario;
 
   Gestor({
     required this.usuario_codigo,
     required this.tipo_Acesso,
     required this.nome_usuario,
     required this.login_usuario,
-    required this.email_usuario, // Adicionando o login do usuário
+    required this.email_usuario,
   });
 
   @override
@@ -69,7 +69,7 @@ class GestorState extends State<Gestor> {
 
   Future<List<Map<String, dynamic>>> PedidosGestor() async {
     var uri = Uri.parse(
-        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
+        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
@@ -87,7 +87,7 @@ class GestorState extends State<Gestor> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Pedidos Recentes'),
-        centerTitle: true, // Adicionando esta linha para centralizar o texto
+        centerTitle: true,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: PedidosGestor(),
@@ -113,16 +113,12 @@ class GestorState extends State<Gestor> {
               String dataFormatada = DateFormat('dd/MM/yyyy').format(data);
               String descricao = pedido['descricaopedido'];
               String status = pedido['estado_pedido'];
-              double valorPedido = double.parse(pedido['valor_total'].toString());
               double valorCotacao = double.parse(pedido['valor_total_cotacao'].toString());
               String email = widget.email_usuario;
               String nomeUsuario = widget.nome_usuario;
               String loginUsuario = widget.login_usuario;
-
               String fornecedor = pedido["Fornecedor"];
-              
 
-              // Definindo as cores do status
               Color statusColor;
               switch (status) {
                 case 'Pendente':
@@ -135,7 +131,6 @@ class GestorState extends State<Gestor> {
                   statusColor = Colors.green;
                   break;
                 default:
-                  //status = "Receber";
                   statusColor = Colors.green;
               }
 
@@ -145,79 +140,88 @@ class GestorState extends State<Gestor> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Codigo: $id',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              'Descrição: $descricao',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              'Fornecedor: $fornecedor',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            // Text(
-                            //   'Nome: $loginUsuario',
-                            //   style: const TextStyle(
-                            //     fontWeight: FontWeight.bold,
-                            //     fontSize: 14.0,
-                            //   ),
-                            // ),
-                            // const SizedBox(height: 4.0),
-                            Text(
-                              'Email: $email',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text('Data: ${dataFormatada.toString().split(' ')[0]}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
-                            const SizedBox(height: 4.0),
-                            Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              'Status: $status',
-                              style: TextStyle(
-                                color: statusColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14
-                              ),
-                            ),
-                            //const SizedBox(height: 4.0),
-                            //Text('Valor Pedido: R\$${valorPedido.toStringAsFixed(2)}'),
-                          ],
+                      Text(
+                        'Codigo: $id',
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(width: 16.0),
-                      ElevatedButton(
-                        onPressed: () {
-                          LerPedido();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6200EE), // Cor do botão
+                      const SizedBox(height: 4.0),
+                      Text(
+                        'Descrição: $descricao',
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
                         ),
-                        child: const Text('Receber', style: TextStyle(color: Colors.white)),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        'Fornecedor: $fornecedor',
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        'Email: $email',
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      Text(
+                        'Data: $dataFormatada',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        'Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        'Status: $status',
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              LerPedido();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6200EE),
+                            ),
+                            child: const Text('Receber', style: TextStyle(color: Colors.white)),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              // Implementar ação para localização
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            child: const Text('Localização', style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
                       ),
                     ],
                   ),

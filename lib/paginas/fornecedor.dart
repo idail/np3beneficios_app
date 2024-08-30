@@ -67,9 +67,19 @@ class FornecedorState extends State<Fornecedor> {
     }
   }
 
+  Future<void> buscarDistancia() async {
+    // Aqui você pode implementar a lógica para abrir o Google Maps ou qualquer outro serviço de localização.
+    // const url = 'https://www.google.com/maps';
+    // if (await canLaunch(url)) {
+    //   await launch(url);
+    // } else {
+    //   throw 'Não foi possível abrir o mapa.';
+    // }
+  }
+
   Future<List<Map<String, dynamic>>> PedidosFornecedor() async {
     var uri = Uri.parse(
-        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_fornecedor_departamento=${widget.codigo_fornecedor_departamento}");
+        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_acesso}&codigo_fornecedor_departamento=${widget.codigo_fornecedor_departamento}");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
@@ -128,7 +138,6 @@ class FornecedorState extends State<Fornecedor> {
                   statusColor = Colors.green;
                   break;
                 default:
-                  //status = "Entregar";
                   statusColor = Colors.green;
               }
 
@@ -169,9 +178,21 @@ class FornecedorState extends State<Fornecedor> {
                               ),
                             ),
                             const SizedBox(height: 4.0),
-                            Text('Data: $dataFormatada',style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,),),
+                            Text(
+                              'Data: $dataFormatada',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             const SizedBox(height: 4.0),
-                            Text('Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}',style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,),),
+                            Text(
+                              'Valor Cotação: R\$${valorCotacao.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             const SizedBox(height: 4.0),
                             Text(
                               'Status: $status',
@@ -184,14 +205,29 @@ class FornecedorState extends State<Fornecedor> {
                         ),
                       ),
                       const SizedBox(width: 16.0),
-                      ElevatedButton(
-                        onPressed: () {
-                          LerPedido();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6200EE),
-                        ),
-                        child: const Text('Entregar', style: TextStyle(color: Colors.white)),
+                      Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              LerPedido();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6200EE),
+                            ),
+                            child: const Text(
+                                'Entregar', style: TextStyle(color: Colors.white)),
+                          ),
+                          const SizedBox(height: 8.0),
+                          ElevatedButton(
+                            onPressed: () {
+                              buscarDistancia(); // Função que vai calcular a distância
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                            child: const Text('Localizar', style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
                       ),
                     ],
                   ),

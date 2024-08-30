@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:np3beneficios_app/paginas/fornecedor.dart';
 import 'package:np3beneficios_app/paginas/gestor.dart';
-import 'package:np3beneficios_app/paginas/grafico.dart';  // Importando a tela de gráficos
-import 'package:np3beneficios_app/paginas/mapa.dart';     // Importando a tela de mapa
+import 'package:np3beneficios_app/paginas/grafico.dart';
+import 'package:np3beneficios_app/paginas/mapa.dart';
 import 'package:np3beneficios_app/paginas/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,7 +14,8 @@ class Abas extends StatefulWidget {
   late String login_usuario = "";
   late String email_usuario = "";
 
-  Abas({super.key, 
+  Abas({
+    super.key,
     required this.tipoAcesso,
     required this.nomeUsuario,
     required this.usuario_codigo,
@@ -45,7 +46,7 @@ class _AbasState extends State<Abas> {
   }
 
   void _onDrawerItemTapped(String item) {
-    Navigator.pop(context); // Fecha o Drawer antes de navegar
+    Navigator.pop(context);
     if (item == 'Pedidos') {
       Navigator.push(
         context,
@@ -67,8 +68,14 @@ class _AbasState extends State<Abas> {
               login_usuario: widget.login_usuario,
             )
           : index == 2
-              ? Mapa(tipo_perfil: widget.tipoAcesso,codigo_usuario: widget.usuario_codigo,)
-              : Grafico(perfil: widget.tipoAcesso,codigo_usuario: widget.usuario_codigo);
+              ? Mapa(
+                  tipo_perfil: widget.tipoAcesso,
+                  codigo_usuario: widget.usuario_codigo,
+                )
+              : Grafico(
+                  perfil: widget.tipoAcesso,
+                  codigo_usuario: widget.usuario_codigo,
+                );
     } else {
       return index == 1
           ? Gestor(
@@ -76,81 +83,114 @@ class _AbasState extends State<Abas> {
               tipo_Acesso: widget.tipoAcesso,
               nome_usuario: widget.nomeUsuario,
               login_usuario: widget.login_usuario,
-              email_usuario:widget.email_usuario,
+              email_usuario: widget.email_usuario,
             )
           : index == 2
-              ? Mapa(tipo_perfil: widget.tipoAcesso,codigo_usuario: widget.usuario_codigo,)
-              : Grafico(perfil: widget.tipoAcesso,codigo_usuario: widget.usuario_codigo,);
+              ? Mapa(
+                  tipo_perfil: widget.tipoAcesso,
+                  codigo_usuario: widget.usuario_codigo,
+                )
+              : Grafico(
+                  perfil: widget.tipoAcesso,
+                  codigo_usuario: widget.usuario_codigo,
+                );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Define os itens do menu inferior com base no tipo de acesso
-    final List<BottomNavigationBarItem> _bottomNavItems = widget.tipoAcesso == "fornecedor"
-        ? const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.analytics),
-              label: 'Dashboard',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.receipt),
-              label: 'Pedidos',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map),
-              label: 'Mapa',
-            ),
-          ]
-        : const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.analytics),
-              label: 'Dashboard',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.receipt),
-              label: 'Pedidos',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map),
-              label: 'Mapa',
-            ),
-          ];
+    final List<BottomNavigationBarItem> _bottomNavItems =
+        widget.tipoAcesso == "fornecedor"
+            ? <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.analytics, color: Colors.grey[850]), // Ícone roxo
+                  label: 'Dashboard',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.receipt, color: Colors.grey[850]), // Ícone roxo
+                  label: 'Pedidos',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map, color: Colors.grey[850]), // Ícone roxo
+                  label: 'Mapa',
+                ),
+              ]
+            : <BottomNavigationBarItem>[
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.analytics, color: Colors.orange), // Ícone roxo
+                  label: 'Dashboard',
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.receipt, color: Colors.orange), // Ícone roxo
+                  label: 'Pedidos',
+                ),
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.map, color: Colors.orange), // Ícone roxo
+                  label: 'Mapa',
+                ),
+              ];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sistema de Compras'),
+        title: const Text('Sistema de Compras'),
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              accountName: Text("Olá \n" + widget.nomeUsuario,style: TextStyle(fontSize: 13)),
-              accountEmail: Text(''), // Opcional
-            ),
-            // ListTile(
-            //   leading: Icon(Icons.receipt),
-            //   title: Text('Pedidos'),
-            //   onTap: () => _onDrawerItemTapped('Pedidos'),
-            // ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Sair'),
-              onTap: () {
-                _logout();
-              },
-            ),
-          ],
+        child: Container(
+          color: Colors.grey[850], // Cor cinza escuro para o fundo do Drawer
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: Colors.orange, // Laranja fraco atrás da logo
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                      'assets/logo-pequena.png', // Adicione o caminho correto para a logo
+                      width: 100,
+                      height: 50,
+                    ),
+                    const SizedBox(height: 10),
+                    const CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage('assets/logo-pequena.png'), // Imagem estática do usuário
+                    ),
+                  ],
+                ),
+              ),
+              UserAccountsDrawerHeader(
+                accountName: Text(
+                  "Olá \n" + widget.nomeUsuario,
+                  style: const TextStyle(fontSize: 13, color: Colors.white), // Fonte branca
+                ),
+                accountEmail: const Text(
+                  '', // Opcional
+                  style: TextStyle(color: Colors.white), // Fonte branca
+                ),
+                decoration: const BoxDecoration(
+                  color: Colors.transparent, // Transparente para ver o fundo cinza
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout, color: Colors.white),
+                title: const Text('Sair', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  _logout();
+                },
+              ),
+            ],
+          ),
         ),
       ),
       body: _currentPage,
       bottomNavigationBar: BottomNavigationBar(
         items: _bottomNavItems,
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey, // Cor para itens não selecionados
-        backgroundColor: Colors.white, // Cor de fundo para melhor contraste
+        selectedItemColor: Colors.white, // Fonte branca para item selecionado
+        unselectedItemColor: Colors.white70, // Fonte branca clara para itens não selecionados
+        backgroundColor: Colors.grey[800], // Cor cinza para o fundo do menu
         onTap: _onItemTapped,
       ),
     );
@@ -162,7 +202,7 @@ class _AbasState extends State<Abas> {
     widget.usuario_codigo = 0;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => Login()),
+      MaterialPageRoute(builder: (context) => const Login()),
     );
   }
 }
