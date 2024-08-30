@@ -67,7 +67,7 @@ class _AbasState extends State<Abas> {
               login_usuario: widget.login_usuario,
             )
           : index == 2
-              ? Mapa()
+              ? Mapa(tipo_perfil: widget.tipoAcesso,codigo_usuario: widget.usuario_codigo,)
               : Grafico(perfil: widget.tipoAcesso,codigo_usuario: widget.usuario_codigo);
     } else {
       return index == 1
@@ -79,7 +79,7 @@ class _AbasState extends State<Abas> {
               email_usuario:widget.email_usuario,
             )
           : index == 2
-              ? Mapa()
+              ? Mapa(tipo_perfil: widget.tipoAcesso,codigo_usuario: widget.usuario_codigo,)
               : Grafico(perfil: widget.tipoAcesso,codigo_usuario: widget.usuario_codigo,);
     }
   }
