@@ -16,6 +16,7 @@ class Grafico extends StatefulWidget {
 
 class GraficoState extends State<Grafico> {
   double valorEmpenho = 0;
+  double valorEmpenhoRecebido = 0;
   double valorConsumido = 0;
   double saldoAtual = 0;
   double valorRecebido = 0;
@@ -35,17 +36,19 @@ class GraficoState extends State<Grafico> {
   {
     var busca_empenho = "valor_empenho";
     var busca_valor_cotacao = "valor_cotacao";
+    var busca_cotacao_pago = "valor_cotacao_pago";
+    var busca_cotacao_aberto = "valor_cotacao_aberto";
     if(perfil == "gestor")
     {
       var uri = Uri.parse(
-        "http://192.168.100.46/np3beneficios_appphp/api/pedidos/grafico.php?perfil=$perfil&codigo_usuario=$codigo_usuario&tipo_busca=$busca_empenho");
+        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/grafico.php?perfil=$perfil&codigo_usuario=$codigo_usuario&tipo_busca=$busca_empenho");
       var resposta = await http.get(uri, headers: {"Accept": "application/json"});
       var retorno = jsonDecode(resposta.body);
 
       for (var i = 0; i < retorno.length; i++) {
         if(retorno[i]["valor_empenho"] > 0){
           print(retorno[i]["valor_empenho"]);
-          valorEmpenho = retorno[i]["valor_empenho"];
+          valorEmpenhoRecebido = retorno[i]["valor_empenho"];
           print(valorEmpenho);
         }else{
           print("zerado");
@@ -53,30 +56,70 @@ class GraficoState extends State<Grafico> {
       }
 
       var uri_cotacao = Uri.parse(
-        "http://192.168.100.46/np3beneficios_appphp/api/pedidos/grafico.php?perfil=$perfil&codigo_usuario=$codigo_usuario&tipo_busca=$busca_valor_cotacao");
+        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/grafico.php?perfil=$perfil&codigo_usuario=$codigo_usuario&tipo_busca=$busca_valor_cotacao");
       var resposta_cotacao = await http.get(uri_cotacao, headers: {"Accept": "application/json"});
       var retorno_cotacao = jsonDecode(resposta_cotacao.body);
+      
       print(retorno_cotacao);
 
+
+      var recebeGestor = retorno_cotacao[0]['SUM(valor_total_cotacao)'];
+      
       // Suponha que você tenha o valor assim:
-      List<Map<String, int>> resultado = [{ 'SUM(valor_total_cotacao)': 662 }];
+      //List<Map<String, int>> resultado = retorno_cotacao[0];
 
       // Acessar o primeiro item da lista (que é um mapa)
-      Map<String, int> mapa = resultado[0];
+      //Map<String, int> mapa = resultado[0];
 
       // Acessar o valor do mapa usando a chave
-      int valorC = mapa['SUM(valor_total_cotacao)'] ?? 0;
+      //int valorC = mapa['SUM(valor_total_cotacao)'] ?? 0;
 
-      valorConsumido = valorC.toDouble();
+      
 
-      print(valorC); // Output: 662
+      //print(valorConsumido); // Output: 662
 
       print(valorConsumido);
 
+        setState(() {
+          valorEmpenho = valorEmpenhoRecebido;
 
+          valorConsumido = recebeGestor.toDouble();
 
-      if(valorEmpenho != "" && valorConsumido != "")
+          if(valorEmpenho != "" && valorConsumido != "")
         saldoAtual = valorEmpenho - valorConsumido;
+        });
+    }else{
+      var uri = Uri.parse(
+      "http://192.168.100.6/np3beneficios_appphp/api/pedidos/grafico.php?perfil=$perfil&codigo_usuario=$codigo_usuario&tipo_busca=$busca_cotacao_pago");
+      var resposta_fornecedor = await http.get(uri, headers: {"Accept": "application/json"});
+      var retorno_fornecedor = jsonDecode(resposta_fornecedor.body);
+
+      print(retorno_fornecedor);
+
+      // Acessa o primeiro item da lista que retorna da API
+      var recebeFornecedor = retorno_fornecedor[0]['sum(valor_total_cotacao)'];
+
+      // Acessar o valor associado à chave "SUM(valor_total_cotacao)"
+      //double valorConsumido = recebe['SUM(valor_total_cotacao)'] ?? 0.0;
+
+      print(valorConsumido); // Output: 662.0 (por exemplo)
+
+      var uri_cotacao_aberto = Uri.parse(
+      "http://192.168.100.6/np3beneficios_appphp/api/pedidos/grafico.php?perfil=$perfil&codigo_usuario=$codigo_usuario&tipo_busca=$busca_cotacao_aberto");
+      var resposta_fornecedor_aberto = await http.get(uri_cotacao_aberto, headers: {"Accept": "application/json"});
+      var retorno_fornecedor_aberto = jsonDecode(resposta_fornecedor_aberto.body);
+
+      var recebeFornecedorAberto = retorno_fornecedor_aberto[0]["sum(valor_total_cotacao)"];
+
+      print(retorno_fornecedor_aberto);
+
+      setState(() {
+        valorRecebido = recebeFornecedor.toDouble();  
+        valorPendente = recebeFornecedorAberto.toDouble();
+
+        if(valorRecebido != "" && valorPendente != "")
+        saldoAtual = valorRecebido - valorPendente;
+      });
     }
   }
 

@@ -68,7 +68,7 @@ class _AbasState extends State<Abas> {
             )
           : index == 2
               ? Mapa()
-              : Grafico(perfil: widget.tipoAcesso,codigo_usuario: 0,);
+              : Grafico(perfil: widget.tipoAcesso,codigo_usuario: widget.usuario_codigo);
     } else {
       return index == 1
           ? Gestor(
