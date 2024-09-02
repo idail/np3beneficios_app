@@ -10,7 +10,7 @@ class Inicio extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.blueAccent,
         primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.grey[850], // Cor de fundo cinza fraco
+        scaffoldBackgroundColor: Colors.grey.shade600, // Cor de fundo cinza fraco
       ),
       home: const Login(),
     );

@@ -69,7 +69,7 @@ class GestorState extends State<Gestor> {
 
   Future<List<Map<String, dynamic>>> PedidosGestor() async {
     var uri = Uri.parse(
-        "http://192.168.15.200/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
+        "http://192.168.100.6/np3beneficios_appphp/api/pedidos/busca_pedidos.php?codigo_usuario=${widget.usuario_codigo}&tipo_acesso=${widget.tipo_Acesso}");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
 
     List<dynamic> data = json.decode(resposta.body);
@@ -86,8 +86,9 @@ class GestorState extends State<Gestor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pedidos Recentes'),
+        title: Text('Pedidos Recentes',textAlign: TextAlign.center,style: TextStyle(color: Colors.white),),
         centerTitle: true,
+        backgroundColor: Colors.grey[800],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: PedidosGestor(),

@@ -19,8 +19,8 @@ class MapaState extends State<Mapa> {
   GoogleMapController? _controladorMapa;
 
   // Pontos específicos das duas localidades
-  final LatLng _pontoA = LatLng(-20.434351, -54.616956); // Rua 14 de Julho, 5141
-  final LatLng _pontoB = LatLng(-20.457685294130176, -54.58712544147332); // Av. Afonso Pena, 4909
+  final LatLng _pontoA = LatLng(-9.972413115315575, -67.80791574242686); // Rua 14 de Julho, 5141
+  final LatLng _pontoB = LatLng(-9.951368295032635, -67.82165171759154); // Av. Afonso Pena, 4909
 
   // Variável para armazenar a distância calculada
   String _distancia = "0 km";
@@ -37,19 +37,22 @@ class MapaState extends State<Mapa> {
     //print(widget.tipo_perfil + "-" + widget.codigo_usuario);
 
     var uri = Uri.parse(
-        "http://192.168.15.200/np3beneficios_appphp/api/mapa/localizacao.php?perfil=$perfil&codigo_usuario=$codigo_usuario");
+        "http://192.168.100.6/np3beneficios_appphp/api/mapa/localizacao.php?perfil=$perfil&codigo_usuario=$codigo_usuario");
     var resposta_gestor = await http.get(uri, headers: {"Accept": "application/json"});
     //print(resposta_gestor.body);
     var retorno_gestor = jsonDecode(resposta_gestor.body);
 
     print(retorno_gestor);
 
-    var uri_fornecedor = Uri.parse(
-        "http://192.168.15.200/np3beneficios_appphp/api/mapa/localizacao.php?perfil=$perfil&codigo_usuario=$codigo_usuario");
-    var resposta_fornecedor = await http.get(uri_fornecedor, headers: {"Accept": "application/json"});
-    //print(resposta_fornecedor.body);
-    var retorno_fornecedor = jsonDecode(resposta_fornecedor.body);
-    print(retorno_fornecedor);
+
+    String endereco_fornecedor = "Marechal Deodoro,347,Rio Branco,Acre";
+
+    // var uri_fornecedor = Uri.parse(
+    //     "http://192.168.15.200/np3beneficios_appphp/api/mapa/localizacao.php?perfil=$perfil&codigo_usuario=$codigo_usuario");
+    // var resposta_fornecedor = await http.get(uri_fornecedor, headers: {"Accept": "application/json"});
+    // //print(resposta_fornecedor.body);
+    // var retorno_fornecedor = jsonDecode(resposta_fornecedor.body);
+    // print(retorno_fornecedor);
 
     final distanciaEmMetros = Geolocator.distanceBetween(
       _pontoA.latitude,
@@ -67,7 +70,9 @@ class MapaState extends State<Mapa> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Distância entre Dois Pontos'),
+        title: Text('Distância Fornecedor e Gestor',style: const TextStyle(color: Colors.white),),
+        backgroundColor: Colors.grey[800],
+        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -86,7 +91,7 @@ class MapaState extends State<Mapa> {
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text('Distância: $_distancia', style: TextStyle(fontSize: 20)),
+            child: Text('Distância: $_distancia', style: TextStyle(fontSize: 20,color: Colors.white)),
           ),
         ],
       ),

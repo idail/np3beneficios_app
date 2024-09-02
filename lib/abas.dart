@@ -72,10 +72,12 @@ class _AbasState extends State<Abas> {
                   tipo_perfil: widget.tipoAcesso,
                   codigo_usuario: widget.usuario_codigo,
                 )
-              : Grafico(
-                  perfil: widget.tipoAcesso,
-                  codigo_usuario: widget.usuario_codigo,
-                );
+              : index == 3
+                  ? Grafico(
+                      tipo_Acesso: widget.tipoAcesso,
+                      usuario_codigo: widget.usuario_codigo,
+                    )
+                  : Container(); // Página inicial (se necessário)
     } else {
       return index == 1
           ? Gestor(
@@ -90,72 +92,73 @@ class _AbasState extends State<Abas> {
                   tipo_perfil: widget.tipoAcesso,
                   codigo_usuario: widget.usuario_codigo,
                 )
-              : Grafico(
-                  perfil: widget.tipoAcesso,
-                  codigo_usuario: widget.usuario_codigo,
-                );
+              : index == 3
+                  ? Grafico(
+                      tipo_Acesso: widget.tipoAcesso,
+                      usuario_codigo: widget.usuario_codigo,
+                    )
+                  : Container(); // Página inicial (se necessário)
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final List<BottomNavigationBarItem> _bottomNavItems =
-        widget.tipoAcesso == "fornecedor"
-            ? <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.analytics, color: Colors.grey[850]), // Ícone roxo
-                  label: 'Dashboard',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.receipt, color: Colors.grey[850]), // Ícone roxo
-                  label: 'Pedidos',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.map, color: Colors.grey[850]), // Ícone roxo
-                  label: 'Mapa',
-                ),
-              ]
-            : <BottomNavigationBarItem>[
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.analytics, color: Colors.orange), // Ícone roxo
-                  label: 'Dashboard',
-                ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.receipt, color: Colors.orange), // Ícone roxo
-                  label: 'Pedidos',
-                ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.map, color: Colors.orange), // Ícone roxo
-                  label: 'Mapa',
-                ),
-              ];
+        <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard, color: Colors.orange),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt, color: Colors.orange),
+            label: 'Pedidos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map, color: Colors.orange),
+            label: 'Mapa',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings, color: Colors.orange), // Novo ícone
+            label: 'Configurações', // Nome do novo ícone
+          ),
+        ];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sistema de Compras'),
+        backgroundColor: Colors.grey[500],
+        title: const Center(
+          child: Text(
+            'Sistema de Compras',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
       drawer: Drawer(
         child: Container(
-          color: Colors.grey[850], // Cor cinza escuro para o fundo do Drawer
+          color: Colors.grey[850],
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
               DrawerHeader(
                 decoration: const BoxDecoration(
-                  color: Colors.orange, // Laranja fraco atrás da logo
+                  color: Colors.orange,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Image.asset(
-                      'assets/logo-pequena.png', // Adicione o caminho correto para a logo
+                      'assets/logo-pequena.png',
                       width: 100,
                       height: 50,
                     ),
                     const SizedBox(height: 10),
                     const CircleAvatar(
                       radius: 30,
-                      backgroundImage: AssetImage('assets/logo-pequena.png'), // Imagem estática do usuário
+                      backgroundImage: AssetImage('assets/avatar.jpeg'),
                     ),
                   ],
                 ),
@@ -163,14 +166,14 @@ class _AbasState extends State<Abas> {
               UserAccountsDrawerHeader(
                 accountName: Text(
                   "Olá \n" + widget.nomeUsuario,
-                  style: const TextStyle(fontSize: 13, color: Colors.white), // Fonte branca
+                  style: const TextStyle(fontSize: 13, color: Colors.white),
                 ),
                 accountEmail: const Text(
-                  '', // Opcional
-                  style: TextStyle(color: Colors.white), // Fonte branca
+                  '',
+                  style: TextStyle(color: Colors.white),
                 ),
                 decoration: const BoxDecoration(
-                  color: Colors.transparent, // Transparente para ver o fundo cinza
+                  color: Colors.transparent,
                 ),
               ),
               ListTile(
@@ -188,10 +191,12 @@ class _AbasState extends State<Abas> {
       bottomNavigationBar: BottomNavigationBar(
         items: _bottomNavItems,
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white, // Fonte branca para item selecionado
-        unselectedItemColor: Colors.white70, // Fonte branca clara para itens não selecionados
-        backgroundColor: Colors.grey[800], // Cor cinza para o fundo do menu
+        selectedItemColor: Colors.orange, // Fonte laranja para item selecionado
+        unselectedItemColor: Colors.grey[400], // Fonte cinza clara para itens não selecionados
+        backgroundColor: Colors.white, // Cor branca para o fundo do menu
         onTap: _onItemTapped,
+        selectedLabelStyle: TextStyle(fontSize: 16.0),
+        unselectedLabelStyle: TextStyle(fontSize: 16.0),
       ),
     );
   }

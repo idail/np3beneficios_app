@@ -70,6 +70,7 @@ flutter:
   assets:
       - assets/logo-pequena.png
       - assets/imagem-fundo.png
+      - assets/avatar.jpeg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
