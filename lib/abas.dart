@@ -4,7 +4,6 @@ import 'package:np3beneficios_app/paginas/gestor.dart';
 import 'package:np3beneficios_app/paginas/grafico.dart';
 import 'package:np3beneficios_app/paginas/mapa.dart';
 import 'package:np3beneficios_app/paginas/login.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Abas extends StatefulWidget {
   late String tipoAcesso;
@@ -45,18 +44,6 @@ class _AbasState extends State<Abas> {
     });
   }
 
-  void _onDrawerItemTapped(String item) {
-    Navigator.pop(context);
-    if (item == 'Pedidos') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => _getPageForIndex(_selectedIndex),
-        ),
-      );
-    }
-  }
-
   Widget _getPageForIndex(int index) {
     if (widget.tipoAcesso == 'fornecedor') {
       return index == 1
@@ -72,12 +59,10 @@ class _AbasState extends State<Abas> {
                   tipo_perfil: widget.tipoAcesso,
                   codigo_usuario: widget.usuario_codigo,
                 )
-              : index == 3
-                  ? Grafico(
-                      tipo_Acesso: widget.tipoAcesso,
-                      usuario_codigo: widget.usuario_codigo,
-                    )
-                  : Container(); // Página inicial (se necessário)
+              : Grafico(
+                  tipo_Acesso: widget.tipoAcesso,
+                  usuario_codigo: widget.usuario_codigo,
+                );
     } else {
       return index == 1
           ? Gestor(
@@ -92,36 +77,29 @@ class _AbasState extends State<Abas> {
                   tipo_perfil: widget.tipoAcesso,
                   codigo_usuario: widget.usuario_codigo,
                 )
-              : index == 3
-                  ? Grafico(
-                      tipo_Acesso: widget.tipoAcesso,
-                      usuario_codigo: widget.usuario_codigo,
-                    )
-                  : Container(); // Página inicial (se necessário)
+              : Grafico(
+                  tipo_Acesso: widget.tipoAcesso,
+                  usuario_codigo: widget.usuario_codigo,
+                );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<BottomNavigationBarItem> _bottomNavItems =
-        <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard, color: Colors.orange),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt, color: Colors.orange),
-            label: 'Pedidos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map, color: Colors.orange),
-            label: 'Mapa',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.orange), // Novo ícone
-            label: 'Configurações', // Nome do novo ícone
-          ),
-        ];
+    final List<BottomNavigationBarItem> _bottomNavItems = <BottomNavigationBarItem>[
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.dashboard, color: Colors.orange),
+        label: 'Dashboard',
+      ),
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.receipt, color: Colors.orange),
+        label: 'Pedidos',
+      ),
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.map, color: Colors.orange),
+        label: 'Mapa',
+      ),
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -195,8 +173,8 @@ class _AbasState extends State<Abas> {
         unselectedItemColor: Colors.grey[400], // Fonte cinza clara para itens não selecionados
         backgroundColor: Colors.white, // Cor branca para o fundo do menu
         onTap: _onItemTapped,
-        selectedLabelStyle: TextStyle(fontSize: 16.0),
-        unselectedLabelStyle: TextStyle(fontSize: 16.0),
+        selectedLabelStyle: const TextStyle(fontSize: 16.0),
+        unselectedLabelStyle: const TextStyle(fontSize: 16.0),
       ),
     );
   }

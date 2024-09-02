@@ -71,7 +71,7 @@ class LoginState extends State<Login> {
 
   Future<void> logar(String usuario, String senha) async {
     var uri = Uri.parse(
-        "http://192.168.100.6/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
+        "http://192.168.15.200/np3beneficios_appphp/api/autenticacao/autenticacao.php?usuario=$usuario&senha=$senha");
     var resposta = await http.get(uri, headers: {"Accept": "application/json"});
     print(resposta.body);
     var retorno = jsonDecode(resposta.body);

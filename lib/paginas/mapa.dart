@@ -37,7 +37,7 @@ class MapaState extends State<Mapa> {
     //print(widget.tipo_perfil + "-" + widget.codigo_usuario);
 
     var uri = Uri.parse(
-        "http://192.168.100.6/np3beneficios_appphp/api/mapa/localizacao.php?perfil=$perfil&codigo_usuario=$codigo_usuario");
+        "http://192.168.15.200/np3beneficios_appphp/api/mapa/localizacao.php?perfil=$perfil&codigo_usuario=$codigo_usuario");
     var resposta_gestor = await http.get(uri, headers: {"Accept": "application/json"});
     //print(resposta_gestor.body);
     var retorno_gestor = jsonDecode(resposta_gestor.body);
